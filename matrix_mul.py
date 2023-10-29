@@ -8,38 +8,34 @@ size = comm.Get_size() # Numero total de procesos en la ejecución de MPI
 rank = comm.Get_rank() # El rango de procesos (desde 0 hasta size-1)
 
 if rank == 0: # Se encuentra en el proceso 0
-    A = np.random.randint(1000, 2000, (4,4))
-    B = np.random.randint(1000, 2000, (4,4))
     
-    comm.send((A, B, 1), dest=0, tag=11)
-    
-    A, B, dato = comm.recv(source=0, tag=11)
+    exponent = input("Ingrese el tamaño de la matriz: 2**")
+    exponent = int(exponent)
 
-    if(dato):
-        print("hola")
+    if exponent > 13:
+        print("El orden maximo es de 2^13 = 8192")
+        comm.Abort()
+
+    n = 2**exponent
+
+    # Generating matrices
+    A = np.random.randint(1000, 2000, (n,n))
+    B = np.random.randint(1000, 2000, (n,n))
+    C = np.empty((n,n), dtype=int)
     
     print(f'{A = }')
     print(f'{B = }')
     
-elif rank == 1:
-    pass
-    # A, B = comm.recv(source=0, tag=11)
-    # print(f'{A = }')
-    # print(f'{B = }')
+    # Se envia a cada core
+    comm.send((A, B, C), dest=0, tag=1)
+    comm.send((A, B, C), dest=1, tag=1)
+    comm.send((A, B, C), dest=2, tag=1)
+    comm.send((A, B, C), dest=3, tag=1)
     
-elif rank == 2:
-    pass
-    # A, B = comm.recv(source=0, tag=11)
-    # print("Proceso 2")
-    # print(f'{A = }')
-    # print(f'{B = }')
+    # ----------
     
-elif rank == 3:
-    pass
-    # A, B = comm.recv(source=0, tag=11)
-    # print("Proceso 3")
-    # print(f'{A = }')
-    # print(f'{B = }')
+    # A, B, C = comm.recv(source=0, tag=1)
     
-else:
-    pass
+for i in range(size):
+    if rank == i:
+        A, B, C = comm.recv(source=0, tag=1)
