@@ -10,7 +10,13 @@ sudo pip install numpy
 ## Run code
 
 ```bash
-mpiexec -n 4 python matrix_mul.py
+mpiexec -n 4 python fox_algorithm.py
 ```
 
 > `n` flag is according your cpu cores.
+
+## Verify results
+
+```bash
+python3 checker.py
+```
