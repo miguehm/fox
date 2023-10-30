@@ -1,5 +1,7 @@
 # Parallel Programming Algorithm FOX in Python
 
+We highly recommend you read the [theory](https://www.cs.csi.cuny.edu/~gu/teaching/courses/csc76010/slides/Matrix%20Multiplication%20by%20Nur.pdf) about this Algorithm.
+
 ## Install dependences
 
 ```bash
