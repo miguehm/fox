@@ -1,40 +1,41 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
-#define ARRAY_SIZE 100
-#define FIFO_BC "myfifo"
+#define FIFO_BC "mi_fifo2"
 
 int main() {
-    int pidA, pidB, pidC;
-    int pares[ARRAY_SIZE], impares[ARRAY_SIZE], sumas[ARRAY_SIZE];
-    int fd;
     int i;
+    pid_t pidA, pidB, pidC;
+    int pares[100], impares[100], sumas[100];
+    int fd;
 
-    // Crear el pipe
-    mkfifo(FIFO_BC, 0777);
+    // Crear el cauce FIFO
+    mkfifo(FIFO_BC, 0666);
 
-    // Crear el proceso A
     pidA = fork();
     if (pidA == 0) {
-        for (i = 0; i < ARRAY_SIZE; i++) {
+        fd = open(FIFO_BC, 0777);
+        for (int i = 0; i < 100; i++) {
             pares[i] = i * 2; // Almacena el número par en el arreglo de pares
+            write(fd, &pares[i], sizeof(pares[i]));
         }
-        fd = open(FIFO_BC, 1);
-        write(fd, pares, sizeof(pares));
         close(fd);
         exit(0);
     }
 
-    // Crear el proceso B
     pidB = fork();
     if (pidB == 0) {
-        for (i = 0; i < ARRAY_SIZE; i++) {
+        sleep(2);
+        fd = open(FIFO_BC, 0777);
+        for (int i = 0; i < 100; i++) {
             impares[i] = i * 2 + 1; // Almacena el número impar en el arreglo de impares
+            write(fd, &impares[i], sizeof(impares[i]));
         }
-        fd = open(FIFO_BC, 1);
-        write(fd, impares, sizeof(impares));
         close(fd);
         exit(0);
     }
@@ -43,30 +44,25 @@ int main() {
     waitpid(pidA, NULL, 0);
     waitpid(pidB, NULL, 0);
 
-    // Crear el proceso C
     pidC = fork();
     if (pidC == 0) {
-        int pares_leidos[ARRAY_SIZE], impares_leidos[ARRAY_SIZE];
-        fd = open(FIFO_BC, 0);
-        read(fd, pares_leidos, sizeof(pares_leidos));
-        read(fd, impares_leidos, sizeof(impares_leidos));
+        fd = open(FIFO_BC, 0777);
+        for(i=0;i<100;i++){
+            read(fd, &pares[i], sizeof(pares[i]));
+        }
+        for(i=0;i<100;i++){
+            read(fd, &impares[i], sizeof(impares[i]));
+            sumas[i]=pares[i]+impares[i];
+        }
         close(fd);
 
-        // Calcular la suma de los arreglos
-        for (i = 0; i < ARRAY_SIZE; i++) {
-            sumas[i] = pares_leidos[i] + impares_leidos[i];
-        }
-
         // Imprimir las sumas
-        for (i = 0; i < ARRAY_SIZE; i++) {
-            printf("La suma de %d + %d es: %d\n", pares_leidos[i], impares_leidos[i], sumas[i]);
+        for (i = 0; i < 100; i++) {
+            printf("La suma de %d + %d es: %d\n", pares[i], impares[i], sumas[i]);
         }
 
         exit(0);
     }
 
-    // Eliminar el pipe
-    unlink(FIFO_BC);
-
     return 0;
-} 
+}
