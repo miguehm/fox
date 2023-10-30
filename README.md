@@ -1,4 +1,4 @@
-# HOW TO RUN
+# Parallel Programming Algorithm FOX in Python
 
 ## Install dependences
 
@@ -6,6 +6,8 @@
 sudo pip install mpi4py \
 sudo pip install numpy
 ```
+
+> Windows users may need to configure your path, check [Python MPI Setup](https://nyu-cds.github.io/python-mpi/setup/) for more info
 
 ## Run code
 
