@@ -13,11 +13,27 @@ sudo pip install numpy
 
 ## Run code
 
+Linux
+
 ```bash
 mpiexec -n 4 python fox_algorithm.py
 ```
 
 > `n` flag is according your cpu cores.
+
+## Measure Time
+
+Windows
+
+```bash
+Measure-Command {mpiexec -n 4 python fox_algorithm.py}
+```
+
+Linux
+
+```bash
+time mpiexec -n 4 python fox_algorithm.py
+```
 
 ## Verify results
 
