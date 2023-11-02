@@ -23,7 +23,7 @@ mpiexec -n 4 python fox_algorithm.py
 
 ## Measure Time
 
-Windows
+Windows PowerShell
 
 ```bash
 Measure-Command {mpiexec -n 4 python fox_algorithm.py}
