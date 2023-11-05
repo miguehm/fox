@@ -1,5 +1,6 @@
 import numpy as np
 from mpi4py import MPI
+from time import time
 
 comm = MPI.COMM_WORLD  # get the communicator object
 size = comm.Get_size() # total number of processes
@@ -16,6 +17,7 @@ if rank == 0: # if the process is the master
         comm.Abort()
 
     MATRIX_SIZE = 2**exponent
+    print(f"Generando matrices de tamaño {MATRIX_SIZE}x{MATRIX_SIZE}")
     # generate two random matrix of size MATRIX_SIZE
     matrix_A    = np.random.randint(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE)) 
     matrix_B    = np.random.randint(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE)) 
@@ -28,6 +30,7 @@ else:
 data = comm.bcast(data, root=0)                  # broadcast the data to all processes
 MATRIX_SIZE, matrix_A, matrix_B, matrix_C = data # unpack the data
 
+start_time = time()
 for row_i in range(MATRIX_SIZE): 
     # Each process calculates a row of the matrix C
     # The process with rank i calculates the row i of the matrix C
@@ -45,9 +48,11 @@ for row_i in range(MATRIX_SIZE):
     comm.Allreduce(MPI.IN_PLACE, matrix_C[row_i], op=MPI.SUM)
 
 if rank == 0:
-    print(f'{repr(matrix_A)}\n')
-    print(f'{repr(matrix_B)}\n')
-    print(f'{repr(matrix_C)}')
+    end_time = time() - start_time
+    print(f'Matriz A:\n{repr(matrix_A)}\n')
+    print(f'Matriz B:\n{repr(matrix_B)}\n')
+    print(f'Matriz C (RESULTADO):\n{repr(matrix_C)}')
     np.savetxt('arrayA.txt', matrix_A, fmt='%d')
     np.savetxt('arrayB.txt', matrix_B, fmt='%d')
     np.savetxt('result.txt', matrix_C, fmt='%d')
+    print(f"Tiempo de ejecución: {end_time:.2} segundos")
