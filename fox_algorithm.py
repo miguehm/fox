@@ -6,8 +6,8 @@ comm = MPI.COMM_WORLD  # get the communicator object
 size = comm.Get_size() # total number of processes
 rank = comm.Get_rank() # rank of this process
 
-np.random.seed(69) # set the seed for the random numbers generator
-                   # so that the same numbers are generated in each process 
+np.random.seed(69)  # set the seed for the random numbers generator
+                    # so that the same numbers are generated in each process 
 
 if rank == 0: # if the process is the master 
     exponent = input("El tamaño de la matriz esta dado por la forma 2^n.\nIngrese el valor de n: ")
@@ -41,7 +41,7 @@ for row_i in range(MATRIX_SIZE):
             # a[row_i, row_i] gets shifted to the right by i positions
             # and b[row_i] gets shifted to the bottom by i positions
             col = (row_i + i) % MATRIX_SIZE
-            matrix_C[row_i] += matrix_A[row_i, col] * matrix_B[col]
+            matrix_C[row_i] += matrix_A[row_i, col] * matrix_B[col] 
 
     # The rows of the matrix C are distributed among the processes using the MPI_Allreduce function
     # The MPI_Allreduce function sums the rows of the matrix C calculated by each process
