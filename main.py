@@ -21,10 +21,8 @@ def graphs(min_e, max_e, isInt=True):
         times_SEC[exponent] = np.zeros(5)
         print(f'Calculating for 2^{exponent}...')
         for i in range(5):
-            # times_MPI[exponent][i] = fmpi.fox_MPI(exponent, True)
-            # times_SEC[exponent][i] = fsec.fox_SEC(exponent, isInt=isInt)
-            times_MPI[exponent][i] = run_mpi_file('fox_MPI.py', exponent, isInt=isInt)
             times_SEC[exponent][i] = run_sec_file('fox_SEC.py', exponent, isInt=isInt)
+            times_MPI[exponent][i] = run_mpi_file('fox_MPI.py', exponent, isInt=isInt)
 
     bar_width = 0.35
 
