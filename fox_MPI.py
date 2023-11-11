@@ -1,11 +1,8 @@
 import numpy as np
-import cProfile
-import matplotlib.pyplot as plt
-
 from mpi4py import MPI
-from time   import time
+from time import time
 
-def fox(exponent: int) -> float:
+def fox(exponent: int, isInt: bool) -> float:
     comm = MPI.COMM_WORLD  # get the communicator object
     size = comm.Get_size() # total number of processes
     rank = comm.Get_rank() # rank of this process
@@ -14,21 +11,28 @@ def fox(exponent: int) -> float:
                         # so that the same numbers are generated in each process 
 
     if rank == 0: # if the process is the master 
-
         MATRIX_SIZE = 2**exponent
         # generate two random matrix of size MATRIX_SIZE
-        matrix_A    = np.random.randint(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE)) 
-        matrix_B    = np.random.randint(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE)) 
-        # initialize the matrix C with zeros
-        matrix_C    = np.zeros((MATRIX_SIZE, MATRIX_SIZE), dtype=int)
-        data        = (MATRIX_SIZE, matrix_A, matrix_B, matrix_C)
+        if isInt:
+            matrix_A    = np.random.randint(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE)) 
+            matrix_B    = np.random.randint(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE)) 
+            # initialize the matrix C with zeros
+            matrix_C    = np.zeros((MATRIX_SIZE, MATRIX_SIZE), dtype=int)
+        else:
+            matrix_A    = np.random.uniform(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE))
+            matrix_B    = np.random.uniform(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE))
+            # initialize the matrix C with zeros
+            matrix_C    = np.zeros((MATRIX_SIZE, MATRIX_SIZE))
+        
+        data = (MATRIX_SIZE, matrix_A, matrix_B, matrix_C)
+
     else:
         data = None
 
     data = comm.bcast(data, root=0)                  # broadcast the data to all processes
     MATRIX_SIZE, matrix_A, matrix_B, matrix_C = data # unpack the data
-
     start_time = time()
+
     for row_i in range(MATRIX_SIZE): 
         # Each process calculates a row of the matrix C
         # The process with rank i calculates the row i of the matrix C
@@ -47,20 +51,16 @@ def fox(exponent: int) -> float:
 
     if rank == 0:
         end_time = time() - start_time
-        print(f'Matriz A:\n{repr(matrix_A)}\n')
-        print(f'Matriz B:\n{repr(matrix_B)}\n')
-        print(f'Matriz C (RESULTADO):\n{repr(matrix_C)}')
-        np.savetxt('arrayA.txt', matrix_A, fmt='%d')
-        np.savetxt('arrayB.txt', matrix_B, fmt='%d')
-        np.savetxt('result.txt', matrix_C, fmt='%d')
-        print(f"Tiempo de ejecución: {end_time:.2} segundos")
+        if isInt:
+            np.savetxt('arrayA.txt', matrix_A, fmt='%d')
+            np.savetxt('arrayB.txt', matrix_B, fmt='%d')
+            np.savetxt('result.txt', matrix_C, fmt='%d')
+        else:
+            np.savetxt('arrayA.txt', matrix_A, fmt='%f')
+            np.savetxt('arrayB.txt', matrix_B, fmt='%f')
+            np.savetxt('result.txt', matrix_C, fmt='%f')
+        # print(f"Tiempo de ejecución: {end_time:4.4} segundos")
         return end_time
 
-def graphs():
-    times = {}
-    for exponent in range(6, 14):
-        times[exponent] = np.zeros(5)
-        for i in range(5):
-            times[exponent][i] = fox(exponent)
-
-    
+if __name__ == "__main__":
+    fox(3, False)
