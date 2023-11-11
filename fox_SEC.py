@@ -1,6 +1,7 @@
+import sys
 import numpy as np
 from time import time
-from tqdm.auto import tqdm
+from tqdm import tqdm
 
 def fox_SEC(exponent: int, isInt: bool) -> float:
 
@@ -18,13 +19,11 @@ def fox_SEC(exponent: int, isInt: bool) -> float:
     start_time = time()
 
     for row_i in tqdm(range(MATRIX_SIZE)): 
-
         for i in range(MATRIX_SIZE):
             col = (row_i + i) % MATRIX_SIZE
             matrix_C[row_i] += matrix_A[row_i, col] * matrix_B[col] 
 
-    np.savetxt('arrayA.txt', matrix_A, fmt='%d')
-    np.savetxt('arrayB.txt', matrix_B, fmt='%d')
-    np.savetxt('result.txt', matrix_C, fmt='%d')
-    
-    return time() - start_time
+    print(time() - start_time)
+
+if __name__ == '__main__':
+    fox_SEC(int(sys.argv[1]), bool(sys.argv[2]))
