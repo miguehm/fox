@@ -4,6 +4,8 @@ import numpy as np
 from time import time
 from mpi4py import MPI
 
+from resource import getrusage, RUSAGE_SELF
+
 exponent = int(sys.argv[1])
 isInt    = bool(sys.argv[2])
 
@@ -53,6 +55,8 @@ comm.Allreduce(MPI.IN_PLACE, matrix_C, op=MPI.SUM)
 
 if rank == 0:
     print(time() - start_time)
+    mem = getrusage(RUSAGE_SELF).ru_maxrss
+    print(mem)
     np.savetxt('arrayA.txt', matrix_A, fmt='%d')
     np.savetxt('arrayB.txt', matrix_B, fmt='%d')
     np.savetxt('result.txt', matrix_C, fmt='%d')
