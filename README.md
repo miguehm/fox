@@ -40,3 +40,9 @@ time mpiexec -n 4 python fox_algorithm.py
 ```bash
 python3 checker.py
 ```
+
+## Measure memory
+```bash
+pip install memory-profiler # install library
+mpiexec -np 2 python -m mprof run test.py
+```
