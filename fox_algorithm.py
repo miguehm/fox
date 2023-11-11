@@ -31,7 +31,7 @@ else:
 data = comm.bcast(data, root=0)                  # broadcast the data to all processes
 MATRIX_SIZE, matrix_A, matrix_B, matrix_C = data # unpack the data
 
-fp=open(f'memory_profiler-{rank}.log','w+')
+fp=open(f'memory_profiler_{rank}.log','w+')
 @profile(stream=fp)
 def main():
     start_time = time()
