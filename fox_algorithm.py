@@ -55,4 +55,4 @@ if rank == 0:
     np.savetxt('arrayA.txt', matrix_A, fmt='%d')
     np.savetxt('arrayB.txt', matrix_B, fmt='%d')
     np.savetxt('result.txt', matrix_C, fmt='%d')
-    print(f"Tiempo de ejecución: {end_time:.2} segundos")
+    print(f"Tiempo de ejecución: {end_time:4.4} segundos")
