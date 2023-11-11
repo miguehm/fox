@@ -1,5 +1,4 @@
 import numpy as np
-from memory_profiler import profile, LogFile # checar logfile
 from mpi4py import MPI
 from time import time
 
@@ -31,34 +30,30 @@ else:
 data = comm.bcast(data, root=0)                  # broadcast the data to all processes
 MATRIX_SIZE, matrix_A, matrix_B, matrix_C = data # unpack the data
 
-fp=open(f'memory_profiler_{rank}.log','w+')
-@profile(stream=fp)
-def main():
-    start_time = time()
-    for row_i in range(MATRIX_SIZE): 
-        # Each process calculates a row of the matrix C
-        # The process with rank i calculates the row i of the matrix C
-        # The row i of the matrix C is the sum of the rows of the matrix A multiplied by the matrix B
+start_time = time()
+for row_i in range(MATRIX_SIZE): 
+    # Each process calculates a row of the matrix C
+    # The process with rank i calculates the row i of the matrix C
+    # The row i of the matrix C is the sum of the rows of the matrix A multiplied by the matrix B
 
-        if rank == row_i % size and rank < MATRIX_SIZE: # this ensures that each process calculates a row of the matrix C without repeating rows
-            for i in range(MATRIX_SIZE):
-                # a[row_i, row_i] gets shifted to the right by i positions
-                # and b[row_i] gets shifted to the bottom by i positions
-                col = (row_i + i) % MATRIX_SIZE
-                matrix_C[row_i] += matrix_A[row_i, col] * matrix_B[col] 
+    if rank == row_i % size and rank < MATRIX_SIZE: # this ensures that each process calculates a row of the matrix C without repeating rows
+        for i in range(MATRIX_SIZE):
+            # a[row_i, row_i] gets shifted to the right by i positions
+            # and b[row_i] gets shifted to the bottom by i positions
+            col = (row_i + i) % MATRIX_SIZE
+            matrix_C[row_i] += matrix_A[row_i, col] * matrix_B[col] 
 
-        # The rows of the matrix C are distributed among the processes using the MPI_Allreduce function
-        # The MPI_Allreduce function sums the rows of the matrix C calculated by each process
-        comm.Allreduce(MPI.IN_PLACE, matrix_C[row_i], op=MPI.SUM)
+    # The rows of the matrix C are distributed among the processes using the MPI_Allreduce function
+    # The MPI_Allreduce function sums the rows of the matrix C calculated by each process
+    comm.Allreduce(MPI.IN_PLACE, matrix_C[row_i], op=MPI.SUM)
 
-    if rank == 0:
-        end_time = time() - start_time
-        print(f'Matriz A:\n{repr(matrix_A)}\n')
-        print(f'Matriz B:\n{repr(matrix_B)}\n')
-        print(f'Matriz C (RESULTADO):\n{repr(matrix_C)}')
-        np.savetxt('arrayA.txt', matrix_A, fmt='%d')
-        np.savetxt('arrayB.txt', matrix_B, fmt='%d')
-        np.savetxt('result.txt', matrix_C, fmt='%d')
-        print(f"Tiempo de ejecución: {end_time:.2} segundos")
+if rank == 0:
+    end_time = time() - start_time
+    print(f'Matriz A:\n{repr(matrix_A)}\n')
+    print(f'Matriz B:\n{repr(matrix_B)}\n')
+    print(f'Matriz C (RESULTADO):\n{repr(matrix_C)}')
+    np.savetxt('arrayA.txt', matrix_A, fmt='%d')
+    np.savetxt('arrayB.txt', matrix_B, fmt='%d')
+    np.savetxt('result.txt', matrix_C, fmt='%d')
+    print(f"Tiempo de ejecución: {end_time:.2} segundos")
 
-main()
