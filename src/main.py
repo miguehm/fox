@@ -66,19 +66,16 @@ def graphs(min_e, max_e, isInt=True):
     Time_ax.set_ylabel('Tiempo de ejecución (s)')
     Time_ax.set_xticks(x_Time_MPI + bar_w/2, x_Labels)
     Time_ax.set_yticks([]) 
-
     bars_Time_MPI = Time_ax.bar(x_Time_MPI, 
                                 y_Time_MPI, 
                                 bar_w, 
                                 label='MPI',        
-                                color='#EA75FA'
-                                )
+                                color='#EA75FA')
     bars_Time_SEC = Time_ax.bar(x_Time_SEC, 
                                 y_Time_SEC, 
                                 bar_w, 
                                 label='Secuencial', 
-                                color='#4590FA'
-                                )
+                                color='#4590FA')
     
     for bar in bars_Time_SEC + bars_Time_MPI :
         x_pos   = bar.get_x() + bar.get_width()/2.0
@@ -88,8 +85,7 @@ def graphs(min_e, max_e, isInt=True):
             y_value, 
             f'{y_value:5.5}s', 
             va='bottom', 
-            ha='center'
-        )
+            ha='center')
     Time_ax.legend()
 
     Memory_ax.set_title(f'Grafica comparativa de la memoria (RAM) utilizada entre ejecuciones\nsecuenciales y paralelas.')
@@ -97,9 +93,17 @@ def graphs(min_e, max_e, isInt=True):
     Memory_ax.set_ylabel('Memoria utilizada (MB)')
     Memory_ax.set_xticks(x_Memory_MPI + bar_w/2, x_Labels)
     Memory_ax.set_yticks([])
-
-    bars_Memory_MPI = Memory_ax.bar(x_Memory_MPI, y_Memory_MPI, bar_w, label='MPI',        color='#EA75FA')
-    bars_Memory_SEC = Memory_ax.bar(x_Memory_SEC, y_Memory_SEC, bar_w, label='Secuencial', color='#4590FA')
+    bars_Memory_MPI = Memory_ax.bar(x_Memory_MPI, 
+                                    y_Memory_MPI, 
+                                    bar_w, 
+                                    label='MPI',
+                                    color='#EA75FA')
+    bars_Memory_SEC = Memory_ax.bar(x_Memory_SEC, 
+                                    y_Memory_SEC, 
+                                    bar_w, 
+                                    label='Secuencial', 
+                                    color='#4590FA')
+    
     for bar in bars_Memory_SEC + bars_Memory_MPI :
         x_pos   = bar.get_x() + bar.get_width()/2.0
         y_value = bar.get_height()
@@ -108,8 +112,7 @@ def graphs(min_e, max_e, isInt=True):
             y_value, 
             f'{(y_value/1024):5.5}MB', 
             va='bottom', 
-            ha='center'
-        )
+            ha='center')
     Memory_ax.legend()
     
     fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
