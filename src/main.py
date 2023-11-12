@@ -14,15 +14,17 @@ def run_sec_file(sec_file_path, exponent, isInt=True):
     return result.stdout.splitlines()
 
 def data(min_e, max_e, isInt=True):
-    times_MPI = {}
-    times_SEC = {}
+    times_MPI  = {}
+    times_SEC  = {}
     memory_MPI = {}
     memory_SEC = {}
     np.random.seed(69)  # set the seed for the random numbers generator
                         # so that the same numbers are generated in each process
     for exponent in range(min_e, max_e):
-        times_MPI[exponent] = np.zeros(5)
-        times_SEC[exponent] = np.zeros(5)
+        times_MPI [exponent] = np.zeros(5)
+        times_SEC [exponent] = np.zeros(5)
+        memory_MPI[exponent] = np.zeros(5)
+        memory_SEC[exponent] = np.zeros(5)
         print(f'Calculating for {2**exponent}...')
         for i in range(5):
             times_SEC[exponent][i], memory_MPI[exponent][i] = run_sec_file('src/fox_SEC.py', exponent, isInt=isInt)
@@ -41,8 +43,8 @@ def graphs(min_e, max_e, isInt=True):
 
     times_MPI, times_SEC, memory_MPI, memory_SEC = data(min_e, max_e, isInt=isInt)
 
-    y_Time_MPI   = [np.mean(times_MPI[exponent])  for exponent in times_MPI ]
-    y_Time_SEC   = [np.mean(times_SEC[exponent])  for exponent in times_SEC ]
+    y_Time_MPI   = [np.mean(times_MPI [exponent]) for exponent in times_MPI ]
+    y_Time_SEC   = [np.mean(times_SEC [exponent]) for exponent in times_SEC ]
     y_Memory_MPI = [np.mean(memory_MPI[exponent]) for exponent in memory_MPI]
     y_Memory_SEC = [np.mean(memory_SEC[exponent]) for exponent in memory_SEC]
     
@@ -59,14 +61,25 @@ def graphs(min_e, max_e, isInt=True):
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.5, hspace=0.5)
     fig.suptitle(f'Comparación de las ejecuciones del algoritmo Fox con matrices de números {num_type}.')
     
-    Time_ax.set_title(f'Gráfica comparativa de los tiempos de ejecución entre ejecuciones\nsecuenciales y paralelas.')
+    Time_ax.set_title ('Gráfica comparativa de los tiempos de ejecución entre ejecuciones\nsecuenciales y paralelas.')
     Time_ax.set_xlabel('Orden de la Matriz')
     Time_ax.set_ylabel('Tiempo de ejecución (s)')
     Time_ax.set_xticks(x_Time_MPI + bar_w/2, x_Labels)
     Time_ax.set_yticks([]) 
 
-    bars_Time_MPI = Time_ax.bar(x_Time_MPI, y_Time_MPI, bar_w, label='MPI',        color='#EA75FA')
-    bars_Time_SEC = Time_ax.bar(x_Time_SEC, y_Time_SEC, bar_w, label='Secuencial', color='#4590FA')
+    bars_Time_MPI = Time_ax.bar(x_Time_MPI, 
+                                y_Time_MPI, 
+                                bar_w, 
+                                label='MPI',        
+                                color='#EA75FA'
+                                )
+    bars_Time_SEC = Time_ax.bar(x_Time_SEC, 
+                                y_Time_SEC, 
+                                bar_w, 
+                                label='Secuencial', 
+                                color='#4590FA'
+                                )
+    
     for bar in bars_Time_SEC + bars_Time_MPI :
         x_pos   = bar.get_x() + bar.get_width()/2.0
         y_value = bar.get_height()
