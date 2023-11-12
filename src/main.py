@@ -27,8 +27,8 @@ def data(min_e, max_e, isInt=True):
         memory_SEC[exponent] = np.zeros(5)
         print(f'Calculating for {2**exponent}...')
         for i in range(5):
-            times_SEC[exponent][i], memory_MPI[exponent][i] = run_sec_file('src/fox_SEC.py', exponent, isInt=isInt)
-            times_MPI[exponent][i], memory_SEC[exponent][i] = run_mpi_file('src/fox_MPI.py', exponent, isInt=isInt)
+            times_SEC[exponent][i], memory_SEC[exponent][i] = run_sec_file('src/fox_SEC.py', exponent, isInt=isInt)
+            times_MPI[exponent][i], memory_MPI[exponent][i] = run_mpi_file('src/fox_MPI.py', exponent, isInt=isInt)
     
     return times_MPI, times_SEC, memory_MPI, memory_SEC
 
