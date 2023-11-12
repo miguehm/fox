@@ -79,9 +79,9 @@ def graphs(min_e, max_e, isInt=True):
     numtype = 'enteros' if isInt else 'reales'
 
     plt.figure(figsize=(10, 5))
-    plt.title(f'Tiempo de ejecución del algoritmo fox con\nmatrices de números {numtype}.')
+    plt.title(f'Memoria del algoritmo fox con\nmatrices de números {numtype}.')
     plt.xlabel('Orden de la Matriz')
-    plt.ylabel('Memoria (s)')
+    plt.ylabel('Memoria (MB)')
     plt.xticks(x_memory_MPI + bar_width/2, x_labels)
     plt.yticks([]) 
     bars_MPI = plt.bar(x_memory_MPI, y_memory_MPI, bar_width, label='MPI',        color='#EA75FA')
