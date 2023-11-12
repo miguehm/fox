@@ -60,8 +60,9 @@ def graphs(min_e, max_e, isInt=True):
 
 def main():
 
-    #! WARNING: This will take a long time to run. If you want to run it, uncomment the lines below.
-    #* We recommend you to run one call to graphs() at a time.
+    #! WARNING: This will take a long time to run. 
+    #!          Uncomment the graphs you want to generate.
+    #* There are already some graphs generated in the graphs folder.
     graphs(6, 9, isInt=True)
     # graphs(6, 9, isInt=False)
     # graphs(9, 12, isInt=True)
