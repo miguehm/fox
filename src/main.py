@@ -19,7 +19,7 @@ def data(min_e, max_e, isInt=True):
     times_SEC  = {}
     memory_MPI = {}
     memory_SEC = {}
-    iterations = 1
+    iterations = 5
     np.random.seed(69)  # set the seed for the random numbers generator
                         # so that the same numbers are generated in each process
     for exponent in range(min_e, max_e):
