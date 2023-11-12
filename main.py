@@ -19,7 +19,7 @@ def graphs(min_e, max_e, isInt=True):
     for exponent in range(min_e, max_e):
         times_MPI[exponent] = np.zeros(5)
         times_SEC[exponent] = np.zeros(5)
-        print(f'Calculating for 2^{exponent}...')
+        print(f'Calculating for {2**exponent}...')
         for i in range(5):
             times_SEC[exponent][i] = run_sec_file('fox_SEC.py', exponent, isInt=isInt)
             times_MPI[exponent][i] = run_mpi_file('fox_MPI.py', exponent, isInt=isInt)
@@ -49,21 +49,25 @@ def graphs(min_e, max_e, isInt=True):
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval:5.5}s', va='bottom', ha='center')
 
+    OM_min, OM_max = 2**(min_e), 2**(max_e-1)
     if not os.path.exists('graphs'):
         os.makedirs('graphs')
 
-    if not os.path.exists(f'graphs/{2**(min_e)}-{2**(max_e-1)}'):
-        os.makedirs(f'graphs/{2**(min_e)}-{2**(max_e-1)}')
+    if not os.path.exists(f'graphs/{OM_min}-{OM_max}'):
+        os.makedirs(f'graphs/{OM_min}-{OM_max}')
 
-    plt.savefig(f'graphs/{2**(min_e)}-{2**(max_e-1)}/fox_{numtype}_{2**(min_e)}-{2**(max_e-1)}.png')
+    plt.savefig(f'graphs/{OM_min}-{OM_max}/fox_{numtype}_{OM_min}-{OM_max}.png')
 
 def main():
-    # graphs(6, 9, isInt=True)
+
+    #! WARNING: This will take a long time to run. If you want to run it, uncomment the lines below.
+    #* We recommend you to run one call to graphs() at a time.
+    graphs(6, 9, isInt=True)
     # graphs(6, 9, isInt=False)
     # graphs(9, 12, isInt=True)
     # graphs(9, 12, isInt=False)
-    graphs(12, 14, isInt=True)
-    graphs(12, 14, isInt=False)
+    # graphs(12, 14, isInt=True)
+    # graphs(12, 14, isInt=False)
     
 if __name__ == '__main__':
     main()
