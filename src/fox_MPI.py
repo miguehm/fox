@@ -1,7 +1,7 @@
 import sys
 import numpy as np
 
-from time import time
+from time import perf_counter
 from mpi4py import MPI
 
 exponent = int(sys.argv[1])
@@ -15,13 +15,13 @@ if rank == 0: # if the process is the master
     MATRIX_SIZE = 2**exponent
     # generate two random matrix of size MATRIX_SIZE
     if isInt:
-        matrix_A    = np.random.randint(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE)) 
-        matrix_B    = np.random.randint(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE)) 
+        matrix_A    = np.random.randint(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE)) 
+        matrix_B    = np.random.randint(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE)) 
         # initialize the matrix C with zeros
         matrix_C    = np.zeros((MATRIX_SIZE, MATRIX_SIZE), dtype=int)
     else:
-        matrix_A    = np.random.uniform(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE))
-        matrix_B    = np.random.uniform(1000, 2000, (MATRIX_SIZE, MATRIX_SIZE))
+        matrix_A    = np.random.uniform(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE))
+        matrix_B    = np.random.uniform(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE))
         # initialize the matrix C with zeros
         matrix_C    = np.zeros((MATRIX_SIZE, MATRIX_SIZE))
     
@@ -32,7 +32,7 @@ else:
 
 data = comm.bcast(data, root=0)                  # broadcast the data to all processes
 MATRIX_SIZE, matrix_A, matrix_B, matrix_C = data # unpack the data
-start_time = time()
+start_time = perf_counter()
 
 for row_i in range(MATRIX_SIZE): 
     # Each process calculates a row of the matrix C
@@ -52,7 +52,7 @@ for row_i in range(MATRIX_SIZE):
 comm.Allreduce(MPI.IN_PLACE, matrix_C, op=MPI.SUM)
 
 if rank == 0:
-    print(time() - start_time)
-    np.savetxt('arrayA.txt', matrix_A, fmt='%d')
-    np.savetxt('arrayB.txt', matrix_B, fmt='%d')
-    np.savetxt('result.txt', matrix_C, fmt='%d')
+    print(perf_counter() - start_time)
+    # np.savetxt('arrayA.txt', matrix_A, fmt='%d')
+    # np.savetxt('arrayB.txt', matrix_B, fmt='%d')
+    # np.savetxt('result.txt', matrix_C, fmt='%d')
