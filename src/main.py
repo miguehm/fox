@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sys import argv
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', f'{argv[1]}', 'python', mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
+    result = subprocess.run(['mpiexec', '-n', f'{8}', 'python', mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     #return result.stdout.decode('utf-8')
     return result.stdout.splitlines()
 
@@ -124,7 +124,7 @@ def graphs(min_e, max_e, isInt=True):
             ha='center'
         )
     Memory_ax.legend()
-    
+    plt.tight_layout()
     fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
 
 def main():
@@ -132,10 +132,9 @@ def main():
     #! WARNING: This will take a long time to run. 
     #!          Uncomment the graphs you want to generate.
     #* There are already some graphs generated in the graphs folder.
-    print(argv[1])
-    graphs( 12,  13, isInt=True)
+    # graphs( 6,  9, isInt=True)
     # graphs( 6,  9, isInt=False)
-    # graphs( 9, 12, isInt=True)
+    graphs( 9, 12, isInt=True)
     # graphs( 9, 12, isInt=False)
     # graphs(12, 14, isInt=True)
     # graphs(12, 14, isInt=False)
