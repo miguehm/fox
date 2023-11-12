@@ -99,8 +99,8 @@ def main():
     # graphs(6, 9, isInt=False)
     # graphs(9, 12, isInt=True)
     # graphs(9, 12, isInt=False)
-    graphs(11, 12, isInt=True)
-    graphs(11, 12, isInt=False)
+    graphs(12, 13, isInt=True)
+    graphs(12, 13, isInt=False)
     
 if __name__ == '__main__':
     main()
