@@ -20,6 +20,16 @@ def graphs(min_e, max_e, isInt=True):
     memory_SEC = {}
     np.random.seed(69)  # set the seed for the random numbers generator
                         # so that the same numbers are generated in each process
+
+    if not os.path.exists('graphs'):
+        os.makedirs('graphs')
+        
+    if not os.path.exists(f'graphs/{2**(min_e)}-{2**(max_e-1)}'):
+        os.makedirs(f'graphs/{2**(min_e)}-{2**(max_e-1)}')
+
+    if not os.path.exists(f'graphs/{2**(min_e)}-{2**(max_e-1)}'):
+        os.makedirs(f'graphs/{2**(min_e)}-{2**(max_e-1)}')
+
     for exponent in range(min_e, max_e):
         times_MPI[exponent] = np.zeros(5)
         times_SEC[exponent] = np.zeros(5)
@@ -62,12 +72,6 @@ def graphs(min_e, max_e, isInt=True):
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval:5.5}s', va='bottom', ha='center')
 
-    if not os.path.exists('graphs'):
-        os.makedirs('graphs')
-
-    if not os.path.exists(f'graphs/{2**(min_e)}-{2**(max_e-1)}'):
-        os.makedirs(f'graphs/{2**(min_e)}-{2**(max_e-1)}')
-
     plt.savefig(f'graphs/{2**(min_e)}-{2**(max_e-1)}/fox_{numtype}_{2**(min_e)}-{2**(max_e-1)}.png')
 
     # ========================== Memory ==========================
@@ -88,12 +92,6 @@ def graphs(min_e, max_e, isInt=True):
         yval = bar.get_height()
         plt.text(bar.get_x() + bar.get_width()/2.0, yval, f'{yval/1024} MB', va='bottom', ha='center')
 
-    if not os.path.exists('graphs'):
-        os.makedirs('graphs')
-
-    if not os.path.exists(f'graphs{2**(min_e)}-{2**(max_e-1)}'):
-        os.makedirs(f'graphs{2**(min_e)}-{2**(max_e-1)}')
-
     plt.savefig(f'graphs/{2**(min_e)}-{2**(max_e-1)}/memory_fox_{numtype}_{2**(min_e)}-{2**(max_e-1)}.png')
 
 def main():
@@ -101,8 +99,8 @@ def main():
     # graphs(6, 9, isInt=False)
     # graphs(9, 12, isInt=True)
     # graphs(9, 12, isInt=False)
-    graphs(8, 9, isInt=True)
-    graphs(8, 9, isInt=False)
+    graphs(11, 12, isInt=True)
+    graphs(11, 12, isInt=False)
     
 if __name__ == '__main__':
     main()
