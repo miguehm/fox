@@ -2,6 +2,7 @@ import sys
 import numpy as np
 from time import time
 from tqdm import tqdm
+from resource import getrusage, RUSAGE_SELF
 
 def fox_SEC(exponent: int, isInt: bool) -> float:
 
@@ -27,3 +28,5 @@ def fox_SEC(exponent: int, isInt: bool) -> float:
 
 if __name__ == '__main__':
     fox_SEC(int(sys.argv[1]), bool(sys.argv[2]))
+    mem = getrusage(RUSAGE_SELF).ru_maxrss
+    print(mem)
