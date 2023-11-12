@@ -3,6 +3,7 @@ import numpy as np
 
 from time import perf_counter
 from mpi4py import MPI
+from resource import getrusage, RUSAGE_SELF
 
 exponent = int(sys.argv[1])
 isInt    = bool(sys.argv[2])
@@ -53,6 +54,4 @@ comm.Allreduce(MPI.IN_PLACE, matrix_C, op=MPI.SUM)
 
 if rank == 0:
     print(perf_counter() - start_time)
-    # np.savetxt('arrayA.txt', matrix_A, fmt='%d')
-    # np.savetxt('arrayB.txt', matrix_B, fmt='%d')
-    # np.savetxt('result.txt', matrix_C, fmt='%d')
+    print(getrusage(RUSAGE_SELF).ru_maxrss)
