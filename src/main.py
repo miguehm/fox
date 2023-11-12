@@ -114,7 +114,7 @@ def graphs(min_e, max_e, isInt=True):
             va='bottom', 
             ha='center')
     Memory_ax.legend()
-    
+    plt.tight_layout()
     fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
 
 def main():
@@ -124,7 +124,7 @@ def main():
     #* There are already some graphs generated in the graphs folder.
     graphs( 6,  7, isInt=True)
     # graphs( 6,  9, isInt=False)
-    # graphs( 9, 12, isInt=True)
+    graphs( 9, 12, isInt=True)
     # graphs( 9, 12, isInt=False)
     # graphs(12, 14, isInt=True)
     # graphs(12, 14, isInt=False)
