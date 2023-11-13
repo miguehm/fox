@@ -5,13 +5,13 @@ import matplotlib.pyplot as plt
 from sys import argv
 
 isLinux = os.name == 'posix'
-use_hwthread_cpus = '--use-hwthread-cpus'
 
 if isLinux:
     python_path = 'python3'
+    use_hwthread_cpus = '--use-hwthread-cpus'
 else:
     python_path = 'python'
-    flag = ''
+    use_hwthread_cpus = ''
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
     result = subprocess.run(['mpiexec', '-n', f'{argv[1]}', use_hwthread_cpus, python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
