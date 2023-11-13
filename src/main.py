@@ -1,6 +1,6 @@
 import os
 import subprocess
-import numpy as np
+from numpy import zeros, random, mean, array
 import matplotlib.pyplot as plt
 from sys import argv
 
@@ -25,13 +25,13 @@ def data(min_e, max_e, isInt=True):
     memory_MPI = {}
     memory_SEC = {}
     iterations = 5
-    np.random.seed(69)  # set the seed for the random numbers generator
+    random.seed(69)  # set the seed for the random numbers generator
                         # so that the same numbers are generated in each process
     for exponent in range(min_e, max_e):
-        times_MPI [exponent] = np.zeros(iterations)
-        times_SEC [exponent] = np.zeros(iterations)
-        memory_MPI[exponent] = np.zeros(iterations)
-        memory_SEC[exponent] = np.zeros(iterations)
+        times_MPI [exponent] = zeros(iterations)
+        times_SEC [exponent] = zeros(iterations)
+        memory_MPI[exponent] = zeros(iterations)
+        memory_SEC[exponent] = zeros(iterations)
         print(f'Calculating for {2**exponent}...')
         for i in range(iterations):
             times_MPI[exponent][i], memory_MPI[exponent][i] = run_mpi_file('src/fox_MPI.py', exponent, isInt=isInt)
@@ -53,16 +53,16 @@ def graphs(min_e, max_e, isInt=True):
 
     times_MPI, times_SEC, memory_MPI, memory_SEC = data(min_e, max_e, isInt=isInt)
 
-    y_Time_MPI   = [np.mean(times_MPI [exponent]) for exponent in times_MPI ]
-    y_Time_SEC   = [np.mean(times_SEC [exponent]) for exponent in times_SEC ]
-    y_Memory_MPI = [np.mean(memory_MPI[exponent]) for exponent in memory_MPI]
-    y_Memory_SEC = [np.mean(memory_SEC[exponent]) for exponent in memory_SEC]
+    y_Time_MPI   = [mean(times_MPI [exponent]) for exponent in times_MPI ]
+    y_Time_SEC   = [mean(times_SEC [exponent]) for exponent in times_SEC ]
+    y_Memory_MPI = [mean(memory_MPI[exponent]) for exponent in memory_MPI]
+    y_Memory_SEC = [mean(memory_SEC[exponent]) for exponent in memory_SEC]
     
     bar_w = 0.35
-    x_Time_MPI   = np.array([exponent - bar_w/2 for exponent in times_MPI ])
-    x_Time_SEC   = np.array([exponent + bar_w/2 for exponent in times_SEC ])
-    x_Memory_MPI = np.array([exponent - bar_w/2 for exponent in memory_MPI])
-    x_Memory_SEC = np.array([exponent + bar_w/2 for exponent in memory_SEC])
+    x_Time_MPI   = array([exponent - bar_w/2 for exponent in times_MPI ])
+    x_Time_SEC   = array([exponent + bar_w/2 for exponent in times_SEC ])
+    x_Memory_MPI = array([exponent - bar_w/2 for exponent in memory_MPI])
+    x_Memory_SEC = array([exponent + bar_w/2 for exponent in memory_SEC])
 
     x_Labels = [str(2**exponent) for exponent in times_MPI]
     num_type = 'enteros' if isInt else 'reales'
@@ -142,9 +142,9 @@ def main():
     # graphs( 9, 12, isInt=False)
     #! WARNING: This will take a long time to run. 
     #!          Uncomment them if you want to run them.
-    # graphs(12, 14, isInt=True)
+    graphs(12, 14, isInt=True)
     # graphs(12, 14, isInt=False)
-    graphs(13, 14, isInt=False)
+    # graphs(13, 14, isInt=False)
     
 if __name__ == '__main__':
     main()

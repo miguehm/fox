@@ -1,11 +1,11 @@
-import os
-import numpy as np
-
+from os import name
+from numpy import zeros #, savetxt
+from numpy.random import randint, uniform
 from sys import argv
-from mpi4py import MPI
+from mpi4py.MPI import COMM_WORLD, IN_PLACE, SUM
 from time import perf_counter
 
-isLinux = os.name == 'posix'
+isLinux = name == 'posix'
 
 if isLinux:
     from resource import getrusage, RUSAGE_SELF
@@ -13,7 +13,7 @@ if isLinux:
 exponent = int (argv[1])
 isInt    = bool(argv[2])
 
-comm = MPI.COMM_WORLD  # get the communicator object
+comm = COMM_WORLD  # get the communicator object
 size = comm.Get_size() # total number of processes
 rank = comm.Get_rank() # rank of this process
 
@@ -21,15 +21,15 @@ if rank == 0: # if the process is the master
     MATRIX_SIZE = 2**exponent
     # generate two random matrix of size MATRIX_SIZE
     if isInt:
-        matrix_A    = np.random.randint(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE)) 
-        matrix_B    = np.random.randint(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE)) 
+        matrix_A    = randint(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE)) 
+        matrix_B    = randint(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE)) 
         # initialize the matrix C with zeros
-        matrix_C    = np.zeros((MATRIX_SIZE, MATRIX_SIZE), dtype=int)
+        matrix_C    = zeros((MATRIX_SIZE, MATRIX_SIZE), dtype=int)
     else:
-        matrix_A    = np.random.uniform(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE))
-        matrix_B    = np.random.uniform(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE))
+        matrix_A    = uniform(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE))
+        matrix_B    = uniform(1_000, 2_000, (MATRIX_SIZE, MATRIX_SIZE))
         # initialize the matrix C with zeros
-        matrix_C    = np.zeros((MATRIX_SIZE, MATRIX_SIZE))
+        matrix_C    = zeros((MATRIX_SIZE, MATRIX_SIZE))
     
     data = (MATRIX_SIZE, matrix_A, matrix_B, matrix_C)
 
@@ -55,11 +55,11 @@ for row_i in range(MATRIX_SIZE):
 
 # The rows of the matrix C are distributed among the processes using the MPI_Allreduce function
 # The MPI_Allreduce function sums the rows of the matrix C calculated by each process
-comm.Allreduce(MPI.IN_PLACE, matrix_C, op=MPI.SUM)
+comm.Allreduce(IN_PLACE, matrix_C, op=SUM)
 
 if rank == 0:
     print(perf_counter() - start_time)
     print(getrusage(RUSAGE_SELF).ru_maxrss) if isLinux else print(0)
-    # np.savetxt('matrix_A.data', matrix_A, fmt='%d')
-    # np.savetxt('matrix_B.data', matrix_B, fmt='%d')
-    # np.savetxt('matrix_C.data', matrix_C, fmt='%d')
+    # savetxt('matrix_A.data', matrix_A, fmt='%d')
+    # savetxt('matrix_B.data', matrix_B, fmt='%d')
+    # savetxt('matrix_C.data', matrix_C, fmt='%d')
