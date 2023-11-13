@@ -2,9 +2,10 @@ import os
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
+from sys import argv
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', '8', 'python', mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
+    result = subprocess.run(['mpiexec', '-n', f'{8}', 'python', mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     #return result.stdout.decode('utf-8')
     return result.stdout.splitlines()
 
@@ -18,15 +19,16 @@ def data(min_e, max_e, isInt=True):
     times_SEC  = {}
     memory_MPI = {}
     memory_SEC = {}
+    iterations = 5
     np.random.seed(69)  # set the seed for the random numbers generator
                         # so that the same numbers are generated in each process
     for exponent in range(min_e, max_e):
-        times_MPI [exponent] = np.zeros(5)
-        times_SEC [exponent] = np.zeros(5)
-        memory_MPI[exponent] = np.zeros(5)
-        memory_SEC[exponent] = np.zeros(5)
+        times_MPI [exponent] = np.zeros(iterations)
+        times_SEC [exponent] = np.zeros(iterations)
+        memory_MPI[exponent] = np.zeros(iterations)
+        memory_SEC[exponent] = np.zeros(iterations)
         print(f'Calculating for {2**exponent}...')
-        for i in range(5):
+        for i in range(iterations):
             times_SEC[exponent][i], memory_SEC[exponent][i] = run_sec_file('src/fox_SEC.py', exponent, isInt=isInt)
             times_MPI[exponent][i], memory_MPI[exponent][i] = run_mpi_file('src/fox_MPI.py', exponent, isInt=isInt)
     
@@ -88,7 +90,7 @@ def graphs(min_e, max_e, isInt=True):
             ha='center')
     Time_ax.legend()
 
-    Memory_ax.set_title(f'Grafica comparativa de la memoria (RAM) utilizada entre ejecuciones\nsecuenciales y paralelas.')
+    Memory_ax.set_title(f'Gráfica comparativa de la memoria (RAM) utilizada entre ejecuciones\nsecuenciales y paralelas.')
     Memory_ax.set_xlabel('Orden de la Matriz')
     Memory_ax.set_ylabel('Memoria utilizada (MB)')
     Memory_ax.set_xticks(x_Memory_MPI + bar_w/2, x_Labels)
@@ -122,7 +124,7 @@ def main():
     #! WARNING: This will take a long time to run. 
     #!          Uncomment the graphs you want to generate.
     #* There are already some graphs generated in the graphs folder.
-    graphs( 6,  7, isInt=True)
+    # graphs( 6,  9, isInt=True)
     # graphs( 6,  9, isInt=False)
     graphs( 9, 12, isInt=True)
     # graphs( 9, 12, isInt=False)
