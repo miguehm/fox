@@ -1,9 +1,13 @@
+import os
 import sys
 import numpy as np
 
 from tqdm import tqdm
 from time import perf_counter
-from resource import getrusage, RUSAGE_SELF
+
+isLinux = os.name == 'posix'
+if isLinux:
+    from resource import getrusage, RUSAGE_SELF
 
 def fox_SEC(exponent: int, isInt: bool) -> float:
 
@@ -27,7 +31,7 @@ def fox_SEC(exponent: int, isInt: bool) -> float:
         
 
     print(perf_counter() - start_time)
-    print(getrusage(RUSAGE_SELF).ru_maxrss)
-
+    print(getrusage(RUSAGE_SELF).ru_maxrss) if isLinux else print(0)
+    
 if __name__ == '__main__':
     fox_SEC(int(sys.argv[1]), bool(sys.argv[2]))
