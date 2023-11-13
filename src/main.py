@@ -2,17 +2,19 @@ import os
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
+from sys import argv
 
 isLinux = os.name == 'posix'
+use_hwthread_cpus = '--use-hwthread-cpus'
+
 if isLinux:
     python_path = 'python3'
-    flag = '--use-hwthread-cpus'
 else:
     python_path = 'python'
     flag = ''
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', f'{8}', flag, python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
+    result = subprocess.run(['mpiexec', '-n', f'{argv[1]}', use_hwthread_cpus, python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
 def run_sec_file(sec_file_path, exponent, isInt=True):
@@ -138,12 +140,12 @@ def main():
     #* There are already some graphs generated in the graphs folder.
     graphs( 6,  9, isInt=True)
     graphs( 6,  9, isInt=False)
-    graphs( 9, 12, isInt=True)
-    graphs( 9, 12, isInt=False)
+    # graphs( 9, 12, isInt=True)
+    # graphs( 9, 12, isInt=False)
     #! WARNING: This will take a long time to run. 
     #!          Uncomment them if you want to run them.
-    graphs(12, 14, isInt=True)
-    graphs(12, 14, isInt=False)
+    # graphs(12, 14, isInt=True)
+    # graphs(12, 14, isInt=False)
     
 if __name__ == '__main__':
     main()
