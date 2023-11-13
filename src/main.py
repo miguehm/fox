@@ -4,16 +4,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 isLinux = os.name == 'posix'
-python_path = 'python3' if isLinux else 'python'
+if isLinux:
+    python_path = 'python3'
+    flag = '--use-hwthread-cpus'
+else:
+    python_path = 'python'
+    flag = ''
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', f'{8}', 'python', mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
-    #return result.stdout.decode('utf-8')
+    result = subprocess.run(['mpiexec', '-n', f'{8}', flag, python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
 def run_sec_file(sec_file_path, exponent, isInt=True):
     result = subprocess.run([python_path, sec_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)  
-    #return result.stdout.decode('utf-8')  
     return result.stdout.splitlines()
 
 def data(min_e, max_e, isInt=True):
@@ -133,14 +136,14 @@ def graphs(min_e, max_e, isInt=True):
 def main():
 
     #* There are already some graphs generated in the graphs folder.
-    # graphs( 6,  9, isInt=True)
-    # graphs( 6,  9, isInt=False)
-    # graphs( 9, 12, isInt=True)
-    # graphs( 9, 12, isInt=False)
+    graphs( 6,  9, isInt=True)
+    graphs( 6,  9, isInt=False)
+    graphs( 9, 12, isInt=True)
+    graphs( 9, 12, isInt=False)
     #! WARNING: This will take a long time to run. 
     #!          Uncomment them if you want to run them.
     graphs(12, 14, isInt=True)
-    # graphs(12, 14, isInt=False)
+    graphs(12, 14, isInt=False)
     
 if __name__ == '__main__':
     main()
