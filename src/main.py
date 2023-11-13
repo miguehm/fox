@@ -2,7 +2,8 @@ import os
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
-from sys import argv
+
+isLinux = os.name == 'posix'
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
     result = subprocess.run(['mpiexec', '-n', f'{8}', 'python', mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
@@ -41,6 +42,9 @@ def create_dir(path, e_range, numtype):
         os.makedirs(f'{path}/{e_range}')
     return f'{path}/{e_range}/fox_{numtype}_{e_range}.png'
 
+def graph_Time(ax):
+    pass
+
 def graphs(min_e, max_e, isInt=True):
 
     times_MPI, times_SEC, memory_MPI, memory_SEC = data(min_e, max_e, isInt=isInt)
@@ -59,7 +63,11 @@ def graphs(min_e, max_e, isInt=True):
     x_Labels = [str(2**exponent) for exponent in times_MPI]
     num_type = 'enteros' if isInt else 'reales'
 
-    fig, (Time_ax, Memory_ax) = plt.subplots(1, 2, figsize=(20, 5))
+    if isLinux:
+        fig, (Time_ax, Memory_ax) = plt.subplots(1, 2, figsize=(20, 5))
+    else:
+        fig, Time_ax = plt.subplots(1, 1, figsize=(10, 5))
+        
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.5, hspace=0.5)
     fig.suptitle(f'Comparación de las ejecuciones del algoritmo Fox con matrices de números {num_type}.')
     
@@ -90,45 +98,47 @@ def graphs(min_e, max_e, isInt=True):
             ha='center')
     Time_ax.legend()
 
-    Memory_ax.set_title(f'Gráfica comparativa de la memoria (RAM) utilizada entre ejecuciones\nsecuenciales y paralelas.')
-    Memory_ax.set_xlabel('Orden de la Matriz')
-    Memory_ax.set_ylabel('Memoria utilizada (MB)')
-    Memory_ax.set_xticks(x_Memory_MPI + bar_w/2, x_Labels)
-    Memory_ax.set_yticks([])
-    bars_Memory_MPI = Memory_ax.bar(x_Memory_MPI, 
-                                    y_Memory_MPI, 
-                                    bar_w, 
-                                    label='MPI',
-                                    color='#EA75FA')
-    bars_Memory_SEC = Memory_ax.bar(x_Memory_SEC, 
-                                    y_Memory_SEC, 
-                                    bar_w, 
-                                    label='Secuencial', 
-                                    color='#4590FA')
-    
-    for bar in bars_Memory_SEC + bars_Memory_MPI :
-        x_pos   = bar.get_x() + bar.get_width()/2.0
-        y_value = bar.get_height()
-        Memory_ax.text(
-            x_pos, 
-            y_value, 
-            f'{(y_value/1024):5.5}MB', 
-            va='bottom', 
-            ha='center')
-    Memory_ax.legend()
+    if isLinux:
+        Memory_ax.set_title(f'Gráfica comparativa de la memoria (RAM) utilizada entre ejecuciones\nsecuenciales y paralelas.')
+        Memory_ax.set_xlabel('Orden de la Matriz')
+        Memory_ax.set_ylabel('Memoria utilizada (MB)')
+        Memory_ax.set_xticks(x_Memory_MPI + bar_w/2, x_Labels)
+        Memory_ax.set_yticks([])
+        bars_Memory_MPI = Memory_ax.bar(x_Memory_MPI, 
+                                        y_Memory_MPI, 
+                                        bar_w, 
+                                        label='MPI',
+                                        color='#EA75FA')
+        bars_Memory_SEC = Memory_ax.bar(x_Memory_SEC, 
+                                        y_Memory_SEC, 
+                                        bar_w, 
+                                        label='Secuencial', 
+                                        color='#4590FA')
+        
+        for bar in bars_Memory_SEC + bars_Memory_MPI :
+            x_pos   = bar.get_x() + bar.get_width()/2.0
+            y_value = bar.get_height()
+            Memory_ax.text(
+                x_pos, 
+                y_value, 
+                f'{(y_value/1024):5.5}MB', 
+                va='bottom', 
+                ha='center')
+        Memory_ax.legend()
+
     plt.tight_layout()
     fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
 
 def main():
 
-    #! WARNING: This will take a long time to run. 
-    #!          Uncomment the graphs you want to generate.
     #* There are already some graphs generated in the graphs folder.
     # graphs( 6,  9, isInt=True)
     # graphs( 6,  9, isInt=False)
-    graphs( 9, 12, isInt=True)
+    # graphs( 9, 12, isInt=True)
     # graphs( 9, 12, isInt=False)
-    # graphs(12, 14, isInt=True)
+    #! WARNING: This will take a long time to run. 
+    #!          Uncomment them if you want to run them.
+    graphs(12, 14, isInt=True)
     # graphs(12, 14, isInt=False)
     
 if __name__ == '__main__':
