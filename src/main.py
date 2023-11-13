@@ -8,13 +8,11 @@ isLinux = os.name == 'posix'
 
 if isLinux:
     python_path = 'python3'
-    use_hwthread_cpus = '--use-hwthread-cpus'
 else:
     python_path = 'python'
-    use_hwthread_cpus = ''
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', f'{argv[1]}', use_hwthread_cpus, python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
+    result = subprocess.run(['mpiexec', '-n', f'{argv[1]}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
 def run_sec_file(sec_file_path, exponent, isInt=True):
@@ -36,8 +34,8 @@ def data(min_e, max_e, isInt=True):
         memory_SEC[exponent] = np.zeros(iterations)
         print(f'Calculating for {2**exponent}...')
         for i in range(iterations):
-            times_SEC[exponent][i], memory_SEC[exponent][i] = run_sec_file('src/fox_SEC.py', exponent, isInt=isInt)
             times_MPI[exponent][i], memory_MPI[exponent][i] = run_mpi_file('src/fox_MPI.py', exponent, isInt=isInt)
+            times_SEC[exponent][i], memory_SEC[exponent][i] = run_sec_file('src/fox_SEC.py', exponent, isInt=isInt)
     
     return times_MPI, times_SEC, memory_MPI, memory_SEC
 
@@ -138,14 +136,15 @@ def graphs(min_e, max_e, isInt=True):
 def main():
 
     #* There are already some graphs generated in the graphs folder.
-    graphs( 6,  9, isInt=True)
-    graphs( 6,  9, isInt=False)
+    # graphs( 6,  9, isInt=True)
+    # graphs( 6,  9, isInt=False)
     # graphs( 9, 12, isInt=True)
     # graphs( 9, 12, isInt=False)
     #! WARNING: This will take a long time to run. 
     #!          Uncomment them if you want to run them.
     # graphs(12, 14, isInt=True)
     # graphs(12, 14, isInt=False)
+    graphs(13, 14, isInt=False)
     
 if __name__ == '__main__':
     main()
