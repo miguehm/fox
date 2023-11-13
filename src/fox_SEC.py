@@ -1,7 +1,7 @@
 import os
-import sys
 import numpy as np
 
+from sys import argv
 from tqdm import tqdm
 from time import perf_counter
 
@@ -34,4 +34,4 @@ def fox_SEC(exponent: int, isInt: bool) -> float:
     print(getrusage(RUSAGE_SELF).ru_maxrss) if isLinux else print(0)
     
 if __name__ == '__main__':
-    fox_SEC(int(sys.argv[1]), bool(sys.argv[2]))
+    fox_SEC(int(argv[1]), bool(argv[2]))

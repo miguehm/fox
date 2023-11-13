@@ -1,17 +1,17 @@
 import os
-import sys
 import numpy as np
 
-from time import perf_counter
+from sys import argv
 from mpi4py import MPI
+from time import perf_counter
 
 isLinux = os.name == 'posix'
 
 if isLinux:
     from resource import getrusage, RUSAGE_SELF
 
-exponent = int (sys.argv[1])
-isInt    = bool(sys.argv[2])
+exponent = int (argv[1])
+isInt    = bool(argv[2])
 
 comm = MPI.COMM_WORLD  # get the communicator object
 size = comm.Get_size() # total number of processes
