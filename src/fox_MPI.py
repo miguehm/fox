@@ -3,7 +3,7 @@ import numpy as np
 
 from time import perf_counter
 from mpi4py import MPI
-from psutil import virtual_memory
+from resource import getrusage, RUSAGE_SELF
 
 exponent = int(sys.argv[1])
 isInt    = bool(sys.argv[2])
@@ -11,9 +11,6 @@ isInt    = bool(sys.argv[2])
 comm = MPI.COMM_WORLD  # get the communicator object
 size = comm.Get_size() # total number of processes
 rank = comm.Get_rank() # rank of this process
-
-mem_before = virtual_memory().total - virtual_memory().available
-mem_after = 0
 
 if rank == 0: # if the process is the master 
     MATRIX_SIZE = 2**exponent
@@ -50,7 +47,6 @@ for row_i in range(MATRIX_SIZE):
             # and b[row_i] gets shifted to the bottom by i positions
             col = (row_i + i) % MATRIX_SIZE
             matrix_C[row_i] += matrix_A[row_i, col] * matrix_B[col] 
-    mem_after = virtual_memory().total - virtual_memory().available if virtual_memory().total - virtual_memory().available > mem_after else mem_after
 
 # The rows of the matrix C are distributed among the processes using the MPI_Allreduce function
 # The MPI_Allreduce function sums the rows of the matrix C calculated by each process
@@ -58,4 +54,7 @@ comm.Allreduce(MPI.IN_PLACE, matrix_C, op=MPI.SUM)
 
 if rank == 0:
     print(perf_counter() - start_time)
-    print((mem_after-mem_before)/1024) # in kilobytes
+    print(getrusage(RUSAGE_SELF).ru_maxrss)
+    # np.savetxt('arrayA.txt', matrix_A, fmt='%d')
+    # np.savetxt('arrayB.txt', matrix_B, fmt='%d')
+    # np.savetxt('result.txt', matrix_C, fmt='%d')
