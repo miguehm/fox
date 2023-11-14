@@ -143,8 +143,7 @@ def main():
     #! WARNING: This will take a long time to run. 
     #!          Uncomment them if you want to run them.
     # graphs(12, 14, isInt=True)
-    # graphs(12, 14, isInt=False)
-    graphs(13, 14, isInt=False)
+    graphs(12, 14, isInt=False)
     
 if __name__ == '__main__':
     main()
