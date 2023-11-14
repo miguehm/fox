@@ -46,3 +46,6 @@ python3 checker.py
 pip install memory-profiler # install library
 mpiexec -np 2 python -m mprof run test.py
 ```
+
+<!-- TODO: Manual de funcionamiento (Ejemplos de matrices con el algoritmo) -->
+<!-- TODO: Un manual de instalación (todo lo que instalaron para que funcionara) -->
