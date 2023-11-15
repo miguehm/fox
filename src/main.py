@@ -19,12 +19,13 @@ def run_sec_file(sec_file_path, exponent, isInt=True):
     result = subprocess.run([python_path, sec_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)  
     return result.stdout.splitlines()
 
-def data(min_e, max_e, isInt=True):
+def data(min_e, max_e=0, isInt=True):
     times_MPI  = {}
     times_SEC  = {}
     memory_MPI = {}
     memory_SEC = {}
     iterations = 5
+    
     np.random.seed(69)  # set the seed for the random numbers generator
                         # so that the same numbers are generated in each process
     for exponent in range(min_e, max_e):
@@ -46,7 +47,13 @@ def create_dir(path, e_range, numtype):
         os.makedirs(f'{path}/{e_range}')
     return f'{path}/{e_range}/fox_{numtype}_{e_range}.png'
 
-def graphs(min_e, max_e, isInt=True):
+def graphs(min_e, max_ex=0, isInt=True):
+
+    if int(min_e) > 11 or int(max_ex) > 11: 
+        response = input('This will take a long time to run. Are you sure you want to continue? (y/n)\n')
+        if response.lower() != 'y': return
+
+    max_e = max_ex + 1 if max_ex != 0 else min_e + 1
 
     times_MPI, times_SEC, memory_MPI, memory_SEC = data(min_e, max_e, isInt=isInt)
 
@@ -131,6 +138,20 @@ def graphs(min_e, max_e, isInt=True):
     fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
 
 def main():
+    parameters = argv[1:]
+    Usage_msg = 'Usage: python3 main.py <number of processes> <min exponent> <max exponent>'
+    if len(parameters) == 0: print(Usage_msg); return
+    if len(parameters) < 2: print('Missing parameters.\n' + Usage_msg); return
+    if int(parameters[1]) < 0: print('The minimum exponent must be greater than 0.'); return
+
+    if len(parameters) == 2:
+        graphs(int(parameters[1]))
+
+    if int(parameters[2]) < int(parameters[1]):
+        print('The maximum exponent must be greater than the minimum exponent.')
+        return
+    if len(parameters) == 3:
+        graphs(int(parameters[1]), max_ex=int(parameters[2]))
 
     #* There are already some graphs generated in the graphs folder.
     # graphs( 6,  9, isInt=True)
@@ -140,7 +161,7 @@ def main():
     #! WARNING: This will take a long time to run. 
     #!          Uncomment them if you want to run them.
     # graphs(12, 14, isInt=True)
-    graphs(12, 14, isInt=False)
+    # graphs(12, 14, isInt=False)
     
 if __name__ == '__main__':
     main()
