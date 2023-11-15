@@ -24,14 +24,19 @@ def fox_SEC(exponent: int, isInt: bool) -> float:
 
     start_time = perf_counter()
 
-    for row_i in tqdm(range(MATRIX_SIZE)): 
+    for x in tqdm(range(MATRIX_SIZE)): 
         for i in range(MATRIX_SIZE):
-            col = (row_i + i) % MATRIX_SIZE
-            matrix_C[row_i] += matrix_A[row_i, col] * matrix_B[col] 
+            y = (x + i) % MATRIX_SIZE
+            matrix_C[i] += matrix_A[i, y] * matrix_B[y] 
         
 
     print(perf_counter() - start_time)
     print(getrusage(RUSAGE_SELF).ru_maxrss) if isLinux else print(0)
+    
+    format = '%d' if isInt else '%f'
+    # np.savetxt('/results/matrix_A.data', matrix_A, fmt=format)
+    # np.savetxt('/results/matrix_B.data', matrix_B, fmt=format)
+    # np.savetxt('/results/matrix_C.data', matrix_C, fmt=format)
     
 if __name__ == '__main__':
     fox_SEC(int(argv[1]), bool(argv[2]))
