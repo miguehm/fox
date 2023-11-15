@@ -1,6 +1,6 @@
 # MPI Fox Algorithm
 <div align="center">
-<img src="media\Fox_Algorithm_ManimCE_v0.18.0.gif">
+<img src="media\Fox_Algorithm_ManimCE_v0.18.0_720.gif">
 </div>
 
 This is a simple implementation of the Fox algorithm for matrix multiplication using MPI. The algorithm is described in the following paper:
