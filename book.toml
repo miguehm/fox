@@ -1,0 +1,6 @@
+[book]
+authors = ["Felamar", "Fox"]
+language = "es"
+multilingual = false
+src = "src"
+title = "Python Fox Algorithm"

@@ -1,4 +1,1 @@
-.vscode/
-*.txt
-manim/__pycache__
-manim/media
+book
