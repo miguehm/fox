@@ -46,9 +46,6 @@ def create_dir(path, e_range, numtype):
         os.makedirs(f'{path}/{e_range}')
     return f'{path}/{e_range}/fox_{numtype}_{e_range}.png'
 
-def graph_Time(ax):
-    pass
-
 def graphs(min_e, max_e, isInt=True):
 
     times_MPI, times_SEC, memory_MPI, memory_SEC = data(min_e, max_e, isInt=isInt)
