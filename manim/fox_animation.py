@@ -19,9 +19,9 @@ class Fox_Algorithm(Scene):
         C_matrix = Matrix(C_matrix_v)
         mobj_scale = A_matrix.width
 
-        dot = MathTex('\\cdot')
+        times = MathTex('\\times')
         equals = MathTex('=')
-        equation = VGroup(A_matrix, dot, B_matrix, equals, C_matrix).arrange(RIGHT)
+        equation = VGroup(A_matrix, times, B_matrix, equals, C_matrix).arrange(RIGHT)
         equation.scale_to_fit_width(config["frame_width"] - 1.5)
         equation.to_edge(LEFT)
         self.add(equation)
