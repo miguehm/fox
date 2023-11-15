@@ -1,5 +1,5 @@
 # MPI Fox Algorithm
-![Fox Algorithm](media\Fox_Algorithm_ManimCE_v0.18.0.gif "Fox Algorithm")
+![Fox Algorithm](media\Fox_Algorithm_ManimCE_v0.18.0_720.gif "Fox Algorithm")
 
 This is a simple implementation of the Fox algorithm for matrix multiplication using MPI. The algorithm is described in the following paper:
 > Dean, N. (2017). Matrix Multiplication. Retrieved from https://www.cs.csi.cuny.edu/~gu/teaching/courses/csc76010/slides/Matrix%20Multiplication%20by%20Nur.pdf
