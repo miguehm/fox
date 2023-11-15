@@ -1,6 +1,4 @@
 .vscode/
 *.txt
 manim/__pycache__
-manim/media/*
-!manim/media/videos
-manim/media/videos/fox_animation/1080p60/partial_movie_files
+manim/media
