@@ -40,18 +40,18 @@ data = comm.bcast(data, root=0)                  # broadcast the data to all pro
 MATRIX_SIZE, matrix_A, matrix_B, matrix_C = data # unpack the data
 start_time = perf_counter()
 
-for row_i in range(MATRIX_SIZE): 
+for x in range(MATRIX_SIZE): 
     # Each process calculates a row of the matrix C
     # The process with rank i calculates the row i of the matrix C
     # The row i of the matrix C is the sum of the rows of the matrix A multiplied by the matrix B
 
     # this ensures that each process calculates a row of the matrix C without repeating rows
-    if rank == row_i % size: 
+    if rank == x % size: 
         for i in range(MATRIX_SIZE):
             # a[row_i, row_i] gets shifted to the right by i positions
             # and b[row_i] gets shifted to the bottom by i positions
-            col = (row_i + i) % MATRIX_SIZE
-            matrix_C[row_i] += matrix_A[row_i, col] * matrix_B[col] 
+            y = (x + i) % MATRIX_SIZE
+            matrix_C[i] += matrix_A[i, y] * matrix_B[y] 
 
 # The rows of the matrix C are distributed among the processes using the MPI_Allreduce function
 # The MPI_Allreduce function sums the rows of the matrix C calculated by each process
@@ -60,6 +60,8 @@ comm.Allreduce(MPI.IN_PLACE, matrix_C, op=MPI.SUM)
 if rank == 0:
     print(perf_counter() - start_time)
     print(getrusage(RUSAGE_SELF).ru_maxrss) if isLinux else print(0)
-    # np.savetxt('matrix_A.data', matrix_A, fmt='%d')
-    # np.savetxt('matrix_B.data', matrix_B, fmt='%d')
-    # np.savetxt('matrix_C.data', matrix_C, fmt='%d')
+
+    format = '%d' if isInt else '%f'
+    # np.savetxt('results/matrix_A.data', matrix_A, fmt=format)
+    # np.savetxt('results/matrix_B.data', matrix_B, fmt=format)
+    # np.savetxt('results/matrix_C.data', matrix_C, fmt=format)
