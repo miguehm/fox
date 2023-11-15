@@ -34,7 +34,7 @@ git clone https://github.com/miguehm/fox-algorithm.git && cd fox-algorithm
 ```
 or alternatively, download the zip file and extract it:
 
-![Download zip](media\zip_download.png "Download zip")
+![Download](media\zip_download.png "Download zip")
 
 Then, install the dependencies:
 
