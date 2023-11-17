@@ -1,5 +1,6 @@
 .vscode/
 *.txt
+!requirements.txt
 manim/__pycache__
 manim/media
 venv
