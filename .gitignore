@@ -2,3 +2,4 @@
 *.txt
 manim/__pycache__
 manim/media
+venv
