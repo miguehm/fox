@@ -1,3 +1,4 @@
+import typer   
 import os
 import subprocess
 import numpy as np
@@ -137,21 +138,17 @@ def graphs(min_e, max_ex=0, isInt=True):
     plt.tight_layout()
     fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
 
-def main():
-    parameters = argv[1:]
-    Usage_msg = 'Usage: python3 main.py <number of processes> <min exponent> <max exponent>'
-    if len(parameters) == 0: print(Usage_msg); return
-    if len(parameters) < 2: print('Missing parameters.\n' + Usage_msg); return
-    if int(parameters[1]) < 0: print('The minimum exponent must be greater than 0.'); return
+def main(
+    from_order: int = typer.Option(6, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
+    to_order: int = typer.Option(13, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
+    num_type: bool = typer.Option(True, help="Matrix with integer or real number", rich_help_panel="Matrix number type"),
+    ):
 
-    if len(parameters) == 2:
-        graphs(int(parameters[1]))
-
-    if int(parameters[2]) < int(parameters[1]):
+    if from_order > to_order:
         print('The maximum exponent must be greater than the minimum exponent.')
         return
-    if len(parameters) == 3:
-        graphs(int(parameters[1]), max_ex=int(parameters[2]))
+
+    graphs(from_order, to_order, isInt=num_type)
 
     #* There are already some graphs generated in the graphs folder.
     # graphs( 6,  9, isInt=True)
@@ -164,4 +161,4 @@ def main():
     # graphs(12, 14, isInt=False)
     
 if __name__ == '__main__':
-    main()
+    typer.run(main)
