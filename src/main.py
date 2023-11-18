@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 isLinux = os.name == 'posix'
 
-global ncores
+global nthreads
 
 if isLinux:
     python_path = 'python3'
@@ -15,7 +15,7 @@ else:
     python_path = 'python'
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', f'{ncores}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
+    result = subprocess.run(['mpiexec', '-n', f'{nthreads}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
 def run_sec_file(sec_file_path, exponent, isInt=True):
@@ -94,9 +94,9 @@ def graphs(min_e, max_ex=0, isInt=True):
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.5, hspace=0.5)
     fig.suptitle(f'Comparación de ejecución secuencial vs paralela con algoritmo Fox de tipo {num_type}.')
 
-    global ncores
+    global nthreads
     
-    Time_ax.set_title (f'Tiempo de ejecución\n{get_processor_info()}\nCores: {ncores}')
+    Time_ax.set_title (f'Tiempo de ejecución\n{get_processor_info()}\nThreads: {nthreads}')
     Time_ax.set_xlabel('Orden de la Matriz')
     Time_ax.set_ylabel('Tiempo de ejecución (s)')
     Time_ax.set_xticks(x_Time_MPI + bar_w/2, x_Labels)
@@ -124,7 +124,7 @@ def graphs(min_e, max_ex=0, isInt=True):
     Time_ax.legend()
 
     if isLinux:
-        Memory_ax.set_title (f'Memoria RAM consumida\n{get_processor_info()}\nCores: {ncores}')
+        Memory_ax.set_title (f'Memoria RAM consumida\n{get_processor_info()}\nThreads: {nthreads}')
         Memory_ax.set_xlabel('Orden de la Matriz')
         Memory_ax.set_ylabel('Memoria utilizada (MB)')
         Memory_ax.set_xticks(x_Memory_MPI + bar_w/2, x_Labels)
@@ -158,11 +158,11 @@ def main(
     from_order: int = typer.Option(6, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
     to_order: int = typer.Option(13, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
     int_type: bool = typer.Option(True, help="Matrix with integer or real number", rich_help_panel="Matrix number type"),
-    cores: int = typer.Option(4, help="Number of cores to use", rich_help_panel="MPI options")
+    threads: int = typer.Option(4, help="Number of cores to use", rich_help_panel="MPI options")
     ):
     
-    global ncores
-    ncores = cores
+    global nthreads
+    nthreads = threads
 
     if from_order > to_order:
         print('The maximum exponent must be greater than the minimum exponent.')
