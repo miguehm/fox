@@ -1,11 +1,13 @@
 import typer   
 import os
+import platform
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
-from sys import argv
 
 isLinux = os.name == 'posix'
+
+global ncores
 
 if isLinux:
     python_path = 'python3'
@@ -13,12 +15,24 @@ else:
     python_path = 'python'
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', f'{argv[1]}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
+    result = subprocess.run(['mpiexec', '-n', f'{ncores}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
 def run_sec_file(sec_file_path, exponent, isInt=True):
     result = subprocess.run([python_path, sec_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)  
     return result.stdout.splitlines()
+
+def get_processor_info():
+    if platform.system() == "Windows":
+        # TODO: check how this works on Windows
+        return platform.processor()
+    elif platform.system() == "Darwin":
+        # TODO: check how this works on Mac
+        return os.popen("/usr/sbin/sysctl -n machdep.cpu.brand_string").read().strip()
+    elif platform.system() == "Linux":
+        command = "cat /proc/cpuinfo | grep 'model name' | uniq | awk -F: '{print $2}'"
+        return os.popen(command).read().strip()
+    return ""
 
 def data(min_e, max_e=0, isInt=True):
     times_MPI  = {}
@@ -78,9 +92,11 @@ def graphs(min_e, max_ex=0, isInt=True):
         fig, Time_ax = plt.subplots(1, 1, figsize=(10, 5))
         
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.5, hspace=0.5)
-    fig.suptitle(f'Comparación de las ejecuciones del algoritmo Fox con matrices de números {num_type}.')
+    fig.suptitle(f'Comparación de ejecución secuencial vs paralela con algoritmo Fox de tipo {num_type}.')
+
+    global ncores
     
-    Time_ax.set_title ('Gráfica comparativa de los tiempos de ejecución entre ejecuciones\nsecuenciales y paralelas.')
+    Time_ax.set_title (f'Tiempo de ejecución\n{get_processor_info()}\nCores: {ncores}')
     Time_ax.set_xlabel('Orden de la Matriz')
     Time_ax.set_ylabel('Tiempo de ejecución (s)')
     Time_ax.set_xticks(x_Time_MPI + bar_w/2, x_Labels)
@@ -108,7 +124,7 @@ def graphs(min_e, max_ex=0, isInt=True):
     Time_ax.legend()
 
     if isLinux:
-        Memory_ax.set_title(f'Gráfica comparativa de la memoria (RAM) utilizada entre ejecuciones\nsecuenciales y paralelas.')
+        Memory_ax.set_title (f'Memoria RAM consumida\n{get_processor_info()}\nCores: {ncores}')
         Memory_ax.set_xlabel('Orden de la Matriz')
         Memory_ax.set_ylabel('Memoria utilizada (MB)')
         Memory_ax.set_xticks(x_Memory_MPI + bar_w/2, x_Labels)
@@ -142,13 +158,17 @@ def main(
     from_order: int = typer.Option(6, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
     to_order: int = typer.Option(13, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
     int_type: bool = typer.Option(True, help="Matrix with integer or real number", rich_help_panel="Matrix number type"),
+    cores: int = typer.Option(4, help="Number of cores to use", rich_help_panel="MPI options")
     ):
+    
+    global ncores
+    ncores = cores
 
     if from_order > to_order:
         print('The maximum exponent must be greater than the minimum exponent.')
         return
 
-    graphs(from_order, to_order, isInt=int_type)
+    graphs(from_order, to_order, isInt=int_type, )
 
     #* There are already some graphs generated in the graphs folder.
     # graphs( 6,  9, isInt=True)
