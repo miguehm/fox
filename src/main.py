@@ -4,6 +4,7 @@ import platform
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 isLinux = os.name == 'posix'
 
@@ -87,16 +88,17 @@ def graphs(min_e, max_ex=0, isInt=True):
     num_type = 'enteros' if isInt else 'reales'
 
     if isLinux:
-        fig, (Time_ax, Memory_ax) = plt.subplots(1, 2, figsize=(20, 5))
+       fig1, Time_ax = plt.subplots(1, 1, figsize=(10, 5))
+       fig2, Memory_ax = plt.subplots(1, 1, figsize=(10, 5))
     else:
-        fig, Time_ax = plt.subplots(1, 1, figsize=(10, 5))
+       fig1, Time_ax = plt.subplots(1, 1, figsize=(10, 5))
         
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.5, hspace=0.5)
-    fig.suptitle(f'Comparación de ejecución secuencial vs paralela con algoritmo Fox de tipo {num_type}.')
+    fig1.suptitle(f'Comparación de tiempo\nAlgoritmo Fox VS Secuencial de tipo {num_type}.')
 
     global nthreads
     
-    Time_ax.set_title (f'Tiempo de ejecución\n{get_processor_info()}\nThreads: {nthreads}')
+    Time_ax.set_title (f'{get_processor_info()}\nThreads: {nthreads}')
     Time_ax.set_xlabel('Orden de la Matriz')
     Time_ax.set_ylabel('Tiempo de ejecución (s)')
     Time_ax.set_xticks(x_Time_MPI + bar_w/2, x_Labels)
@@ -123,8 +125,12 @@ def graphs(min_e, max_ex=0, isInt=True):
             ha='center')
     Time_ax.legend()
 
+    plt.tight_layout()
+    fig1.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', f'{num_type} - time'))
+
     if isLinux:
-        Memory_ax.set_title (f'Memoria RAM consumida\n{get_processor_info()}\nThreads: {nthreads}')
+        fig2.suptitle(f'Comparación de memoria RAM\nAlgoritmo fox VS Secuencial de tipo {num_type}.')
+        Memory_ax.set_title (f'{get_processor_info()}\nThreads: {nthreads}')
         Memory_ax.set_xlabel('Orden de la Matriz')
         Memory_ax.set_ylabel('Memoria utilizada (MB)')
         Memory_ax.set_xticks(x_Memory_MPI + bar_w/2, x_Labels)
@@ -150,14 +156,14 @@ def graphs(min_e, max_ex=0, isInt=True):
                 va='bottom', 
                 ha='center')
         Memory_ax.legend()
+        plt.tight_layout()
+        fig2.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', f'{num_type} - memory'))
 
-    plt.tight_layout()
-    fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
+    # fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
 
 def main(
     from_order: int = typer.Option(6, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
     to_order: int = typer.Option(13, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
-    int_type: bool = typer.Option(True, help="Matrix with integer or real number", rich_help_panel="Matrix number type"),
     threads: int = typer.Option(4, help="Number of cores to use", rich_help_panel="MPI options")
     ):
     
@@ -168,7 +174,10 @@ def main(
         print('The maximum exponent must be greater than the minimum exponent.')
         return
 
-    graphs(from_order, to_order, isInt=int_type, )
+    print("==== Iniciando multiplicaciones para numeros enteros...")
+    graphs(from_order, to_order, isInt=True)
+    print("==== Iniciando multiplicaciones para numeros reales...")
+    graphs(from_order, to_order, isInt=False)
 
     #* There are already some graphs generated in the graphs folder.
     # graphs( 6,  9, isInt=True)
