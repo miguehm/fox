@@ -48,11 +48,11 @@ def save_data(data, PROCESSOR, RAM, isInt):
     times_MPI, times_SEC, memory_MPI, memory_SEC = data
     columns = ['exponent', 'time_mean', 'times', 'memory_mean', 'memory']
     datype = 'int' if isInt else 'float'
-    if not os.path.exists(f'results/{PROCESSOR}_{RAM}'):
-        os.makedirs(f'results/{PROCESSOR}_{RAM}')
+    if not os.path.exists(f'results/{PROCESSOR}_{RAM}GB'):
+        os.makedirs(f'results/{PROCESSOR}_{RAM}GB')
 
-    if os.path.exists(f'results/{PROCESSOR}_{RAM}/data_{datype}.csv'):
-        df = pd.read_csv(f'results/{PROCESSOR}_{RAM}/data_{datype}.csv')
+    if os.path.exists(f'results/{PROCESSOR}_{RAM}GB/data_{datype}.csv'):
+        df = pd.read_csv(f'results/{PROCESSOR}_{RAM}GB/data_{datype}.csv')
 
         df2 = pd.DataFrame(columns=columns)
         for exponent in times_MPI:
@@ -71,7 +71,7 @@ def save_data(data, PROCESSOR, RAM, isInt):
             df2.update(df)
             df = df2
 
-        df.to_csv(f'results/{PROCESSOR}_{RAM}/data_{datype}.csv')
+        df.to_csv(f'results/{PROCESSOR}_{RAM}GB/data_{datype}.csv')
         
 
     else:
@@ -83,7 +83,7 @@ def save_data(data, PROCESSOR, RAM, isInt):
         df[['t1','t2', 't3', 't4', 't5']] = pd.DataFrame(df.times.tolist(),  index= df.index)
         df[['m1','m2', 'm3', 'm4', 'm5']] = pd.DataFrame(df.memory.tolist(), index= df.index)
         df.drop(columns=['times', 'memory'], inplace=True)
-        df.to_csv(f'results/{PROCESSOR}_{RAM}/data_{datype}.csv', index=False)
+        df.to_csv(f'results/{PROCESSOR}_{RAM}GB/data_{datype}.csv', index=False)
         
 
 def data(min_e, max_e=0, isInt=True):
