@@ -107,12 +107,12 @@ def graphs(min_e, max_ex=0, isInt=True):
                                 y_Time_MPI, 
                                 bar_w, 
                                 label='MPI',        
-                                color='#EA75FA')
+                                color='#FA821E')
     bars_Time_SEC = Time_ax.bar(x_Time_SEC, 
                                 y_Time_SEC, 
                                 bar_w, 
                                 label='Secuencial', 
-                                color='#4590FA')
+                                color='#FAC01E')
     
     for bar in bars_Time_SEC + bars_Time_MPI :
         x_pos   = bar.get_x() + bar.get_width()/2.0
@@ -139,12 +139,12 @@ def graphs(min_e, max_ex=0, isInt=True):
                                         y_Memory_MPI, 
                                         bar_w, 
                                         label='MPI',
-                                        color='#EA75FA')
+                                        color='#FA821E')
         bars_Memory_SEC = Memory_ax.bar(x_Memory_SEC, 
                                         y_Memory_SEC, 
                                         bar_w, 
                                         label='Secuencial', 
-                                        color='#4590FA')
+                                        color='#FAC01E')
         
         for bar in bars_Memory_SEC + bars_Memory_MPI :
             x_pos   = bar.get_x() + bar.get_width()/2.0
