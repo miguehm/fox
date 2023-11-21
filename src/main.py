@@ -16,6 +16,7 @@ else:
     python_path = 'python'
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
+    global nthreads
     result = subprocess.run(['mpiexec', '-n', f'{nthreads}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
