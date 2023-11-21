@@ -8,9 +8,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from sys import argv
 from psutil import virtual_memory
 
+global nthreads
 isLinux = os.name == 'posix'
 
 if isLinux:
@@ -19,7 +19,8 @@ else:
     python_path = 'python'
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', f'{argv[2]}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
+    global nthreads
+    result = subprocess.run(['mpiexec', '-n', f'{nthreads}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
 def run_sec_file(sec_file_path, exponent, isInt=True):
@@ -28,7 +29,6 @@ def run_sec_file(sec_file_path, exponent, isInt=True):
 
 def get_processor_info():
     if platform.system() == "Windows":
-        # return platform.processor()
         return cpuinfo.get_cpu_info()['brand_raw']
     
     elif platform.system() == "Darwin":
@@ -45,14 +45,15 @@ def get_processor_info():
     return ""
 
 def save_data(data, PROCESSOR, RAM, isInt):
+    global nthreads
     times_MPI, times_SEC, memory_MPI, memory_SEC = data
     columns = ['exponent', 'time_mean', 'times', 'memory_mean', 'memory']
     datype = 'int' if isInt else 'float'
-    if not os.path.exists(f'results/{PROCESSOR}_{RAM}GB'):
-        os.makedirs(f'results/{PROCESSOR}_{RAM}GB')
+    if not os.path.exists(f'results/{PROCESSOR}_{nthreads}-Threads_{RAM}GB'):
+        os.makedirs(f'results/{PROCESSOR}_{nthreads}-Threads_{RAM}GB')
 
-    if os.path.exists(f'results/{PROCESSOR}_{RAM}GB/data_{datype}.csv'):
-        df = pd.read_csv(f'results/{PROCESSOR}_{RAM}GB/data_{datype}.csv')
+    if os.path.exists(f'results/{PROCESSOR}_{nthreads}-Threads_{RAM}GB/data_{datype}.csv'):
+        df = pd.read_csv(f'results/{PROCESSOR}_{nthreads}-Threads_{RAM}GB/data_{datype}.csv')
 
         df2 = pd.DataFrame(columns=columns)
         for exponent in times_MPI:
@@ -71,9 +72,8 @@ def save_data(data, PROCESSOR, RAM, isInt):
             df2.update(df)
             df = df2
 
-        df.to_csv(f'results/{PROCESSOR}_{RAM}GB/data_{datype}.csv')
+        df.to_csv(f'results/{PROCESSOR}_{nthreads}-Threads_{RAM}GB/data_{datype}.csv')
         
-
     else:
         df = pd.DataFrame(columns=columns)
         for exponent in times_MPI:
@@ -83,7 +83,7 @@ def save_data(data, PROCESSOR, RAM, isInt):
         df[['t1','t2', 't3', 't4', 't5']] = pd.DataFrame(df.times.tolist(),  index= df.index)
         df[['m1','m2', 'm3', 'm4', 'm5']] = pd.DataFrame(df.memory.tolist(), index= df.index)
         df.drop(columns=['times', 'memory'], inplace=True)
-        df.to_csv(f'results/{PROCESSOR}_{RAM}GB/data_{datype}.csv', index=False)
+        df.to_csv(f'results/{PROCESSOR}_{nthreads}-Threads_{RAM}GB/data_{datype}.csv', index=False)
         
 
 def data(min_e, max_e=0, isInt=True):
@@ -216,11 +216,14 @@ def charts(min_e, max_ex=0, isInt=True):
     fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
 
 def main(
-        min_exp:  int  = typer.Option(6, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
-        max_exp:  int  = typer.Option(0, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
-        int_type: bool = typer.Option(True, help="Matrix with integer or real number", rich_help_panel="Matrix number type"),
+        min_exp: int = typer.Option(6, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
+        max_exp: int = typer.Option(0, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
+        threads: int = typer.Option(4, help="Number of processes to use", rich_help_panel="Threads to use"),
     ):
-    charts(min_exp, max_exp, isInt=int_type)
+    global nthreads
+    nthreads = threads
+    charts(min_exp, max_exp, isInt=True)
+    charts(min_exp, max_exp, isInt=False)
 
     #* There are already some graphs generated in the graphs folder.
 
