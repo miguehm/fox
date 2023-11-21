@@ -3,7 +3,8 @@ import os
 import subprocess
 import numpy as np
 import matplotlib.pyplot as plt
-from sys import argv
+
+global nThreads
 
 isLinux = os.name == 'posix'
 
@@ -13,7 +14,8 @@ else:
     python_path = 'python'
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
-    result = subprocess.run(['mpiexec', '-n', f'{argv[1]}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
+    global nThreads
+    result = subprocess.run(['mpiexec', '-n', f'{nThreads}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
 def run_sec_file(sec_file_path, exponent, isInt=True):
@@ -141,14 +143,18 @@ def graphs(min_e, max_ex=0, isInt=True):
 def main(
     from_order: int = typer.Option(6, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
     to_order: int = typer.Option(13, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
-    int_type: bool = typer.Option(True, help="Matrix with integer or real number", rich_help_panel="Matrix number type"),
+    threads: int = typer.Option(8, help="Number of threads to use", rich_help_panel="Number of threads to use")
     ):
+    
+    global nThreads
+    nThreads = threads
 
     if from_order > to_order:
         print('The maximum exponent must be greater than the minimum exponent.')
         return
 
-    graphs(from_order, to_order, isInt=int_type)
+    graphs(from_order, to_order, isInt=True)
+    graphs(from_order, to_order, isInt=False)
 
     #* There are already some graphs generated in the graphs folder.
     # graphs( 6,  9, isInt=True)
