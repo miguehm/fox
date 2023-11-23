@@ -1,22 +1,18 @@
 import os
 import re
 import typer
-import platform
 import cpuinfo
+import platform
 import subprocess
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-
+import matplotlib.pyplot as plt
 from psutil import virtual_memory
 
 global nthreads
 isLinux = os.name == 'posix'
 
-if isLinux:
-    python_path = 'python3'
-else:
-    python_path = 'python'
+python_path = 'python3' if isLinux else 'python'
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
     global nthreads
@@ -84,7 +80,6 @@ def save_data(data, PROCESSOR, RAM, isInt):
         df[['m1','m2', 'm3', 'm4', 'm5']] = pd.DataFrame(df.memory.tolist(), index= df.index)
         df.drop(columns=['times', 'memory'], inplace=True)
         df.to_csv(f'results/{PROCESSOR}_{nthreads}-Threads_{RAM}GB/data_{datype}.csv', index=False)
-        
 
 def data(min_e, max_e=0, isInt=True):
     times_MPI  = {}
@@ -110,9 +105,9 @@ def data(min_e, max_e=0, isInt=True):
 def create_dir(path, e_range, numtype):
     if not os.path.exists(path):
         os.makedirs(path)
-    if not os.path.exists(f'{path}/{e_range}'):
-        os.makedirs(f'{path}/{e_range}')
-    return f'{path}/{e_range}/fox_{numtype}_{e_range}.png'
+    if not os.path.exists(f'{path}/{numtype}_executions'):
+        os.makedirs(f'{path}/{numtype}_executions')
+    return f'{path}/{numtype}_executions/{e_range}_{numtype}_fox.png'
 
 def charts(min_e, max_ex=0, isInt=True):
 
@@ -129,9 +124,7 @@ def charts(min_e, max_ex=0, isInt=True):
     times_MPI, times_SEC, memory_MPI, memory_SEC = data(min_e, max_e, isInt=isInt)
 
     PROCESSOR = get_processor_info()
-    print(f'Processor: {PROCESSOR}')
     RAM = round(virtual_memory().total / 1024**3)
-    print(f'RAM: {RAM} GB')
 
     save_data((times_MPI, times_SEC, memory_MPI, memory_SEC), PROCESSOR, RAM, isInt)
 
@@ -155,9 +148,9 @@ def charts(min_e, max_ex=0, isInt=True):
         fig, Time_ax = plt.subplots(1, 1, figsize=(10, 5))
         
     plt.subplots_adjust(left=0.1, right=0.9, bottom=0.1, top=0.9, wspace=0.5, hspace=0.5)
-    fig.suptitle(f'Comparación de las ejecuciones del algoritmo Fox con matrices de números {num_type}.')
+    fig.suptitle(f'Comparación de las ejecuciones del algoritmo Fox con matrices de números {num_type}.\n{PROCESSOR} - {nthreads} Threads - {RAM}GB')
     
-    Time_ax.set_title ('Gráfica comparativa de los tiempos de ejecución entre ejecuciones\nsecuenciales y paralelas.')
+    Time_ax.set_title ('Gráfica de tiempos de ejecuciones secuenciales y paralelas.')
     Time_ax.set_xlabel('Orden de la Matriz')
     Time_ax.set_ylabel('Tiempo de ejecución (s)')
     Time_ax.set_xticks(x_Time_MPI + bar_w/2, x_Labels)
@@ -185,7 +178,7 @@ def charts(min_e, max_ex=0, isInt=True):
     Time_ax.legend()
 
     if isLinux:
-        Memory_ax.set_title(f'Gráfica comparativa de la memoria (RAM) utilizada entre ejecuciones\nsecuenciales y paralelas.')
+        Memory_ax.set_title ('Gráfica de memoria (RAM) utilizada en ejecuciones secuenciales y paralelas.')
         Memory_ax.set_xlabel('Orden de la Matriz')
         Memory_ax.set_ylabel('Memoria utilizada (MB)')
         Memory_ax.set_xticks(x_Memory_MPI + bar_w/2, x_Labels)
@@ -213,20 +206,19 @@ def charts(min_e, max_ex=0, isInt=True):
         Memory_ax.legend()
 
     plt.tight_layout()
-    fig.savefig(create_dir('graphs', f'{2**(min_e)}-{2**(max_e-1)}', num_type))
+    fig.savefig(create_dir('charts', f'{2**(min_e)}-{2**(max_e-1)}', 'int' if isInt else 'float'))
 
 def main(
         min_exp: int = typer.Option(6, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
         max_exp: int = typer.Option(0, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
         threads: int = typer.Option(4, help="Number of processes to use", rich_help_panel="Threads to use"),
     ):
-    global nthreads
-    nthreads = threads
-    charts(min_exp, max_exp, isInt=True)
-    charts(min_exp, max_exp, isInt=False)
+        global nthreads
+        nthreads = threads
+        charts(min_exp, max_exp, isInt=True)
+        charts(min_exp, max_exp, isInt=False)
 
     #* There are already some graphs generated in the graphs folder.
 
-    
 if __name__ == '__main__':
     typer.run(main)
