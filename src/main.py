@@ -109,17 +109,7 @@ def create_dir(path, e_range, numtype):
         os.makedirs(f'{path}/{numtype}_executions')
     return f'{path}/{numtype}_executions/{e_range}_{numtype}_fox.png'
 
-def charts(min_e, max_ex=0, isInt=True):
-
-    if int(min_e) > 11 or int(max_ex) > 11: 
-        response = input('This will take a long time to run. Are you sure you want to continue? (y/n)\n')
-        if response.lower() != 'y': return
-
-    max_e = max_ex + 1 if max_ex != 0 else min_e + 1
-
-    if min_e > max_e:
-        print('The maximum exponent must be greater than the minimum exponent.')
-        return
+def charts(min_e, max_e, isInt=True):
 
     times_MPI, times_SEC, memory_MPI, memory_SEC = data(min_e, max_e, isInt=isInt)
 
@@ -213,10 +203,21 @@ def main(
         max_exp: int = typer.Option(0, help="Exponent of base 2 matrix order (2^)", rich_help_panel="Matrix order range"),
         threads: int = typer.Option(4, help="Number of processes to use", rich_help_panel="Threads to use"),
     ):
+        
+        if min_exp > 11 or max_exp > 11: 
+            response = input('This will take a long time to run. Are you sure you want to continue? (y/n)\n')
+        if response.lower() != 'y': return
+
+        max_e = max_exp + 1 if max_exp != 0 else min_exp + 1
+
+        if min_exp > max_e:
+            print('The maximum exponent must be greater than the minimum exponent.')
+            return
+        
         global nthreads
         nthreads = threads
-        charts(min_exp, max_exp, isInt=True)
-        charts(min_exp, max_exp, isInt=False)
+        charts(min_exp, max_e, isInt=True)
+        charts(min_exp, max_e, isInt=False)
 
     #* There are already some graphs generated in the graphs folder.
 
