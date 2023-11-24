@@ -51,9 +51,9 @@ if __name__ == '__main__':
     RAM = '8GB'
     DTYPES = ['int', 'float']
     METHODS = ['MPI', 'SEC']
-    THREADS = '4-Threads'
+    THREADS = '8-Threads'
     PROCESSOR = 'AMD Ryzen 3 5300U with Radeon Graphics'
-    EXPS = [[6, 7, 8], [9, 10, 11, 12]]
+    EXPS = [[6, 7, 8], [9, 10, 11], [12, 13]]
     MEASURE = 'memory_mean'
     for DTYPE in DTYPES:
         df = pd.read_csv(f'results/{PROCESSOR}_{THREADS}_{RAM}/data_{DTYPE}.csv')
