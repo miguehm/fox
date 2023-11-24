@@ -206,7 +206,7 @@ def main(
         
         if min_exp > 11 or max_exp > 11: 
             response = input('This will take a long time to run. Are you sure you want to continue? (y/n)\n')
-        if response.lower() != 'y': return
+            if response.lower() != 'y': return
 
         max_e = max_exp + 1 if max_exp != 0 else min_exp + 1
 
