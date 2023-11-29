@@ -15,6 +15,8 @@ isLinux = os.name == 'posix'
 python_path = 'python3' if isLinux else 'python'
 
 def run_mpi_file(mpi_file_path, exponent, isInt=True):
+    global nthreads
+    result = subprocess.run(['mpiexec', '-n', f'{nthreads}', python_path, mpi_file_path, f'{exponent}', f'{isInt}'], stdout=subprocess.PIPE, text=True)
     return result.stdout.splitlines()
 
 def run_sec_file(sec_file_path, exponent, isInt=True):
