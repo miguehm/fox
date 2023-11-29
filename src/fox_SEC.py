@@ -32,11 +32,6 @@ def fox_SEC(exponent: int, isInt: bool) -> float:
 
     print(perf_counter() - start_time)
     print(getrusage(RUSAGE_SELF).ru_maxrss) if isLinux else print(0)
-    
-    format = '%d' if isInt else '%f'
-    # np.savetxt('/results/matrix_A.data', matrix_A, fmt=format)
-    # np.savetxt('/results/matrix_B.data', matrix_B, fmt=format)
-    # np.savetxt('/results/matrix_C.data', matrix_C, fmt=format)
-    
+        
 if __name__ == '__main__':
     fox_SEC(int(argv[1]), bool(argv[2]))
